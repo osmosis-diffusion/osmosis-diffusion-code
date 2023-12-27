@@ -30,7 +30,7 @@ import osmosis_utils.data as datao
 
 CONFIG_FILE = r"D:\master\debka\dps_pattern\configs\debka_sample_config.yaml"
 WANDB = False
-
+a = 10
 
 # %% main sampling
 
