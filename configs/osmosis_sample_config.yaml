@@ -1,0 +1,243 @@
+# saving directory
+save_dir: D:\master\debka\dps_pattern\debka
+record_process: True
+record_every: 100
+check_prior: False
+degamma_input: True
+
+# for **check prior** option you need to set few things:
+# 1. check_prior: True
+# 2. guide_and_sample: False
+# 3. save_differences: False
+# 4. conditioning: method: ps
+# 5. conditioning: params: scale: number,number,number,0
+# 6. measurement: operator: name: noise
+
+guide_last_sample: False
+manual_seed: 0 # 0
+guide_and_sample: True # True, False - when check prior
+save_sample: True
+save_differences: True
+text_on_results: True
+
+# repeat batch optimization
+repeat_image: False
+repeat_batch_size: 3
+
+# gibbsDDRM sampling method - the names borrowed from their paper
+sample_pattern:
+#  pattern: original
+
+  pattern: pcgs
+
+  # gibbsDDRM
+  # update betas and b_inf
+  update_start: 0.7
+  update_end: 0
+  # do guidance several times - it is always 1
+  global_N: 1
+  # pingping thing, from the save t value sample and guide
+  local_M: 1
+  s_start: 1
+  s_end: 0
+  # for each t step, the number of optimization steps for beats and B_inf
+  n_iter: 20
+
+  # PGDiff - when to guide? no guidance at all not tin the range
+  start_guidance: 1
+  stop_guidance: 0
+
+  # Universal Guidance - 3.2 backward
+  backward_guidance:
+    backward_guidance: False
+    back_start: 0.4
+    back_end: 0
+    lr: 1e-3
+    num_iters: 3
+
+
+# change unet input and output
+change_input_output_channels: True
+input_channels: 4  # RGBD
+output_channels: 8  # RGBD * 2 - learning sigma = True, if False 4
+
+# unet model configurations
+unet_model:
+  image_size: 256
+  num_channels: 256
+  num_res_blocks: 2
+  channel_mult: ""
+  learn_sigma: True
+  class_cond: False
+  use_checkpoint: False
+  attention_resolutions: 32, 16, 8
+  num_heads: 4
+  num_head_channels: 64
+  num_heads_upsample: -1
+  use_scale_shift_norm: True
+  dropout: 0.0
+  resblock_updown: True
+  use_fp16: False
+  use_new_attention_order: False
+
+  #  model_path: D:\master\models\4-11-23\run3\ema_0.9999_300000.pt
+  model_path: D:\master\models\4-10-23\run2\model360000.pt
+#  model_path: D:\master\models\7-11-23_indoor\run4\model240000.pt
+  #  model_path: D:\master\models\23-8-23\run20\model920000.pt
+  #  model_path: D:\master\models\4-10-23\run2\ema_0.9999_360000.pt
+  pretrain_model: debka  # debka, imagenet, ffhq, debka, None
+
+# diffusion configurations
+diffusion:
+  sampler: ddpm
+  steps: 1000
+  noise_schedule: linear # linear, cosine
+  model_mean_type: epsilon
+  model_var_type: learned_range
+
+  dynamic_threshold: False
+  clip_denoised: False
+  min_max_denoised: False
+
+  rescale_timesteps: False # False
+  timestep_respacing: 1000 # 1000
+  annealing_time: False
+
+# task configurations
+conditioning:
+  method: gdp_pattern # gdp_pattern_diff_loss # gdp_pattern # ps - for checking the prior
+  params:
+    loss_function: norm # norm, mse
+    # if "none" so the rest has no meaning
+    loss_weight: depth # none, raw_nerf, depth, depth_mask_large - none if not underwater_physical(_revised) operator
+    weight_function: gamma,1.4,1.4,1 # function, value
+
+    # relevant only when --> method: gdp_pattern_diff_loss. # if "none" so the rest has no meaning
+    loss_weight_diff: depth # none, raw_nerf, inverse_depth, depth, depth_mask_large
+    weight_function_diff: gamma,1.4,1.4,1. # function, value
+    diff_vars: beta_a # beta_a,beta_b,b_inf
+
+    # when measurement operator is not underwater - set scale for depth to 0 (vR,vG,vB,vD=0)
+#    scale: 15,15,15,0.1 # 15,15,15,3 # 20,20,20,5 # 10,10,10,2 # 30,30,30,10
+    scale: 7,7,7,0.9 # 4,4,4,1 # 7,7,7,0.9
+    gradient_x_prev: True
+    loss_like_dps_paper: False
+    mask_depth: False
+    scale_norm: original # original, depth, pgdiff, pgdiff_color, grad_norm, grad_abs, grad_abs_norm
+
+    gradient_clip: True,0.001,0.005
+    change_clipping: 0. # relevant when gradient_clip: True
+    simon_and_clip: False
+
+# specify the loss and its weight/scale, if not specified so no quality loss
+quality_loss:
+  quality_loss:
+#    color: 0.3
+#    color_depth: 0.5
+    exposure_global: 0.5 # 0.5
+#    exposure: 1
+#    histogram: 0.1
+#    histogram_equal: 30
+    simon_loss: 20 # 20
+
+data:
+  batch_size: 1
+  ground_truth: False
+
+#  name: UIEB
+#  root: D:\datasets\UIEB\mini_set\raw-890_subset
+#  gt: D:\datasets\UIEB\mini_set\reference-890_subset
+#  stop_after: -1 # -1
+#
+#  name: simulation_type_III
+#  root: D:\datasets\uwcnn
+#  stop_after: -1 # -1
+
+#  name: simulation_deborah
+#  root: D:\master\comparison\osmosis_uw_sim\data\simulation
+#  stop_after: -1 # -1
+
+  name: haze_dana
+  root: D:\datasets\images_samples\haze_dana
+  stop_after: -1
+
+#  name: prior_check
+#  root: D:\datasets\images_samples\check_prior_images
+#  stop_after: -1 # -1
+
+#  name: osmosis_lin_wb
+#  root: D:\datasets\images_samples\osmosis_uw_dataset_lin_wb_subset
+#  stop_after: -1 #
+
+#  name: specific_image
+#  root: D:\datasets\images_samples\specific_image
+#  stop_after: -1 #
+
+measurement:
+  operator:
+#    name: noise
+
+    #    name: general_fM
+    #    variance: transmission # original, transmission
+    #    f_factor: 0.1373, 0.2941, 0.49
+    #    f_eta: 1e-6
+    #    f_learn_flag: True
+    #
+    #    m_mat: 0.5,0.5,0.5
+    #    m_eta: 1e-4
+    #    m_learn_flag: True
+
+
+#    name: general_AB
+#
+#    a_mat: 0.9,0.8,0.7
+#    a_eta: 1e-2
+#    a_learn_flag: True
+#
+#    b_mat: 0.5,0.7,0.8
+#    b_eta: 1e-2
+#    b_learn_flag: True
+
+
+    name: haze_physical # haze_physical # underwater_physical_revised # underwater_physical_revised # underwater_physical, noise - for checking the prior
+
+    optimizer: sgd # GD, adam, sgd - GD for gdp_pattern_diff_loss (different losses)
+    scheduler: none # none, steplr
+    degamma: False # True/False
+
+    # does not matter for not underwater
+    depth_type: gamma # original [0,1], contraction, move, min_max, gamma=((x+value[0])*value[1])^value[2]
+    value: 1.4,1.4,1 # 1.4,1.2,1 # it should be float in case of move and two numbers in case of min-max (0.6, 2)
+    beta_a_depth: False # relevant when use the revised model
+
+#   underwater_physical_revised
+#    beta_a: 1.1,0.95,0.95
+#    beta_a_eta: 1e-5
+#    beta_a_learn_flag: True
+#
+#    beta_b: 0.95, 0.8, 0.8
+#    beta_b_eta: 1e-5
+#    beta_b_learn_flag: True
+
+    b_inf: 0.5,0.5,0.5
+
+#    b_inf: 0.1373, 0.2941, 0.49
+#    b_inf: 0.2,0.3,0.4
+    b_inf_eta: 1e-5
+    b_inf_learn_flag: True
+
+    #   underwater_physical
+#    beta: 1.3,1.2,0.9
+    beta: 1.
+    beta_eta: 1e-5 # 1e-4 # 0.0001 # beta_eta: 1e-3
+    beta_learn_flag: True
+
+
+  noise:
+    name: clean
+
+#    name: gaussian
+#    sigma: 0.001
+#    sigma: 0
+
+
