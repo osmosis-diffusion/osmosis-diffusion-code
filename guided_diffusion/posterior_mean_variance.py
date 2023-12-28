@@ -2,12 +2,8 @@ from abc import ABC, abstractmethod
 
 import numpy as np
 import torch
-import torchvision.transforms.functional as tvtf
-from torchvision.utils import make_grid
-from PIL import Image
-import osmosis_utils.utils as utilso
 
-from dps_pattern.util.img_utils import dynamic_thresholding
+from util.img_utils import dynamic_thresholding
 
 # ====================
 # Model Mean Processor
@@ -47,28 +43,6 @@ class MeanProcessor(ABC):
     def process_xstart(self, x):
         if self.dynamic_threshold:
             x = dynamic_thresholding(x, s=0.98)
-
-            # # osmosis_utils - min_max norm for RGB values - support only
-            # # if self.min_max_denoised:
-            # rgb = x[:, 0:3, :, :]
-            # # find values for min and max - we don't want ouliars
-            # min_value = torch.quantile(rgb, 0.2)
-            # max_value = torch.quantile(rgb, 0.98)
-            # # clip to those values
-            # rgb_clamp = torch.clamp(rgb, min_value, max_value)
-            # # set it to be between [-1,1]
-            # rgb_norm = 2 * ((rgb_clamp - rgb_clamp.min()) / (rgb_clamp.max() - rgb_clamp.min())) - 1
-            #
-            # depth = x[:, 3, :, :].unsqueeze(1)
-            # # find values for min and max - we don't want ouliars
-            # min_value = torch.quantile(depth, 0.2)
-            # max_value = torch.quantile(depth, 0.98)
-            # # clip to those values
-            # depth_clamp = torch.clamp(depth, min_value, max_value)
-            # # set it to be between [-1,1]
-            # depth_norm = 2 * ((depth_clamp - depth_clamp.min()) / (depth_clamp.max() - depth_clamp.min())) - 1
-            #
-            # x = torch.cat([rgb_norm, depth_norm], dim=1)
 
         if self.clip_denoised:
             x = x.clamp(-1, 1)
@@ -156,27 +130,7 @@ class EpsilonXMeanProcessor(MeanProcessor):
         return coef1 * x_t - coef2 * eps
 
     def get_mean_and_xstart(self, x, t, model_output):
-        # osmosis_utils edit debug debikaka
-        pred_xstart_tmp = self.predict_xstart(x, t, model_output)
-        if t == 0 and False:
-            pred_xstart_detach = pred_xstart_tmp.detach().cpu()
-
-            rgb = pred_xstart_detach[0, 0:3, :, :]
-            rgb_clip_mask = ((rgb > 1) & (rgb < -1)) * torch.ones_like(rgb)
-            rgb_clip_mask = (rgb_clip_mask[0] * rgb_clip_mask[1] * rgb_clip_mask[2]).unsqueeze(0).repeat(3, 1, 1)
-            rgb_norm = utilso.min_max_norm_range(rgb)
-            depth = pred_xstart_detach[0, -1, :, :].unsqueeze(0)
-            depth_norm = utilso.min_max_norm_range(depth).repeat(3, 1, 1)
-            depth_clip_mask = (((depth > 1) & (depth < -1)) * torch.ones_like(depth)).repeat(3, 1, 1)
-            depth_clip_mask = (depth_clip_mask[0] * depth_clip_mask[1] * depth_clip_mask[2]).unsqueeze(0).repeat(3, 1,
-                                                                                                                 1)
-
-            print(f"\n\nrgb min: {rgb.min()}, max: {rgb.max()}\ndepth min: {depth.min()}, max: {depth.max()}")
-            x0_vis_pil = tvtf.to_pil_image(
-                make_grid([rgb_norm, depth_norm, rgb_clip_mask, depth_clip_mask], nrow=2, pad_value=255))
-            x0_vis_pil.show()
-
-        pred_xstart = self.process_xstart(pred_xstart_tmp)
+        pred_xstart = self.process_xstart(self.predict_xstart(x, t, model_output))
         mean = self.q_posterior_mean(pred_xstart, x, t)
 
         return mean, pred_xstart

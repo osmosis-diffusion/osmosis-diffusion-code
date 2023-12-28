@@ -12,7 +12,6 @@ import torch
 from tqdm.auto import tqdm
 
 from torchvision.utils import make_grid
-from dps.util.img_utils import clear_color
 from .posterior_mean_variance import get_mean_processor, get_var_processor
 
 import osmosis_utils.utils as utilso
@@ -73,8 +72,6 @@ class GaussianDiffusion:
                  rescale_timesteps,
                  **kwargs):
 
-        self.annealing_time = kwargs.get("annealing_time", False)
-        self.min_max_denoised = kwargs.get("min_max_denoised", False)
         # use float64 for accuracy.
         betas = np.array(betas, dtype=np.float64)
         self.betas = betas
@@ -198,20 +195,16 @@ class GaussianDiffusion:
 
         img = x_start
         device = x_start.device
-        guide_and_sample = kwargs.get("guide_and_sample", False)
         global_iteration = kwargs.get("global_iteration", False)
 
         if record:
             n_images = img.shape[0]
+
             rgb_record_dict = {ii: [] for ii in range(n_images)}
             depth_record_dict = {ii: [] for ii in range(n_images)}
-            histogram_record_dict = {ii: [] for ii in range(n_images)}
 
             rgb_record_dict_mm = {ii: [] for ii in range(n_images)}
             depth_record_dict_mm = {ii: [] for ii in range(n_images)}
-            histogram_record_dict_mm = {ii: [] for ii in range(n_images)}
-
-            gradients_record_dict = {ii: [] for ii in range(n_images)}
 
         loss_process = []
         factor = 1
@@ -224,41 +217,7 @@ class GaussianDiffusion:
         # loop over the timestep
         for idx in pbar:
 
-            # if idx == 1 or idx== 0:
-            #     print ("osmosis_utils")
-
-
-            # the annealing option
-            if self.annealing_time:
-
-                # Linearly decreasing + cosine
-                idx = idx / float(factor)
-                t = (idx + idx // 4 * math.cos((steps - idx) / 50)) / steps * 1000
-                # t = (idx + idx // 3 * math.cos((steps - idx) / 80 + 1.5)) / steps * 1000
-
-                # TODO short version for less samples - good for 500 - does not work for now
-                # t = (idx / 1.5 + idx / 3 * math.cos((steps-idx) / 30)) / steps * 800
-
-                # clamp t between [1,1000]
-                t = torch.tensor([t], dtype=torch.int64, device=device, requires_grad=False)
-                time = torch.clamp(t, 1, 1000) - 1
-
-                # in this case the idx is future for the start-stop optimization process
-                idx = int(idx)
-
-                # Sawtooth wave
-                # used instead on repeat the process again from large T. it should be the same - hopfully
-                # t = idx % 1000
-                # future for the start-stop optimization process - here the index will be the time
-                # idx = t
-                # t = torch.tensor([t], dtype=torch.int64, device=device, requires_grad=False)
-                # clamp t between [1,1000]
-                # time = torch.clamp(t, 1, 1000) - 1
-
-            # the original time step
-            else:
-                time = torch.tensor([idx] * img.shape[0], device=device)
-
+            time = torch.tensor([idx] * img.shape[0], device=device)
             time_val_list.append(time.cpu().item())
 
             # flag (bool) for non guidance
@@ -273,78 +232,50 @@ class GaussianDiffusion:
 
                 img.requires_grad = True if guidance_flag else False
 
-                # in DPS they first sample and then guide, in GDP they first guide and then sample
-                if guide_and_sample:
-                    # first guide and then sample - like GDP
-                    out = self.p_mean_variance(model=model, x=img, t=time)
-                    out['sample'] = out['mean']
-                    # calculating the noise for future calculations
-                    current_additional_noise = torch.randn_like(out['mean'], device=img.device)
-                    sample_added_noise = current_additional_noise * torch.exp(0.5 * out['log_variance'])
-                else:
-                    # first sample new x, and then guide the sample - like DPS
-                    out = self.p_sample(x=img, t=time, model=model)
-                    sample_added_noise = None
+                # "clean" the noise with the unet
+                out = self.p_mean_variance(model=model, x=img, t=time)
+                out['sample'] = out['mean']
+
+                # calculating the noise for future calculations
+                current_additional_noise = torch.randn_like(out['mean'], device=img.device)
+                sample_added_noise = current_additional_noise * torch.exp(0.5 * out['log_variance'])
 
                 # there is no use of the noisy measurement, do we need it? I don't know yet
                 noisy_measurement = self.q_sample(measurement, t=time)
 
                 # Give condition. -> guiding
-                if pretrain_model == 'debka' and not check_prior:
+                if pretrain_model == 'osmosis' and not check_prior:
 
-                    # check if there is a sampling method and check the idx to check if to freeze phi (beta and b_inf)
+                    # check if there is a sampling method and check the idx to check if to freeze phis
                     freeze_phi = utilso.is_freeze_phi(sample_pattern, idx, self.num_timesteps)
 
                     if guidance_flag:
-                        # conditioning function
-                        # img, loss, beta, b_inf, gradients
-                        img, loss, variable_dict, gradients, quality_loss = measurement_cond_fn(x_t=out['sample'],
-                                                                                                measurement=measurement,
-                                                                                                noisy_measurement=noisy_measurement,
-                                                                                                x_prev=img,
-                                                                                                x_0_hat=out[
-                                                                                                    'pred_xstart'],
-                                                                                                freeze_phi=freeze_phi,
-                                                                                                sample_added_noise=sample_added_noise,
-                                                                                                time_index=float(
-                                                                                                    idx) / self.num_timesteps)
 
-                        # debug osmosis_utils - print information on the gradients
-                        text_tmp = f"\nRed Gradients: min: {np.round([gradients[0, 0, :, :].min()], decimals=4)}, " \
-                                   f"max: {np.round([gradients[0, 0, :, :].max()], decimals=4)}, mean: {np.round([gradients[0, 0, :, :].mean()], decimals=4)}, " \
-                                   f"std: {np.round([gradients[0, 0, :, :].std()], decimals=4)}" \
-                                   f"\nGreen Gradients: min: {np.round([gradients[0, 1, :, :].min()], decimals=4)}, " \
-                                   f"max: {np.round([gradients[0, 1, :, :].max()], decimals=4)}, mean: {np.round([gradients[0, 1, :, :].mean()], decimals=4)}, " \
-                                   f"std: {np.round([gradients[0, 1, :, :].std()], decimals=4)}" \
-                                   f"\nBlue Gradients: min: {np.round([gradients[0, 2, :, :].min()], decimals=4)}, " \
-                                   f"max: {np.round([gradients[0, 2, :, :].max()], decimals=4)}, mean: {np.round([gradients[0, 2, :, :].mean()], decimals=4)}, " \
-                                   f"std: {np.round([gradients[0, 2, :, :].std()], decimals=4)}" \
-                                   f"\nDepth Gradients: min: {np.round([gradients[0, 3, :, :].min()], decimals=4)}, " \
-                                   f"max: {np.round([gradients[0, 3, :, :].max()], decimals=4)}, mean: {np.round([gradients[0, 3, :, :].mean()], decimals=4)}, " \
-                                   f"std: {np.round([gradients[0, 3, :, :].std()], decimals=4)}\n"
-                        # print(text_tmp)
+                        # conditioning function (guidance)
+                        img, loss, variable_dict, gradients, aux_loss = \
+                            measurement_cond_fn(x_t=out['sample'],
+                                                measurement=measurement,
+                                                noisy_measurement=noisy_measurement,
+                                                x_prev=img,
+                                                x_0_hat=out['pred_xstart'],
+                                                freeze_phi=freeze_phi,
+                                                sample_added_noise=sample_added_noise,
+                                                time_index=float(idx) / self.num_timesteps)
 
 
                     else:
                         # no guidance
                         img = out['sample']
 
-                    # in DPS they first sample and then guide, in GDP they first guide and then sample
-                    if guide_and_sample:
-
-                        # img_mean_values = img.detach().mean(dim=(2, 3), keepdim=True) * \
-                        #                   torch.tensor([1, 1, 1, 0], device=img.device)[None, ..., None, None]
-                        # print(img_mean_values.cpu().squeeze())
-
-                        noise = torch.randn_like(img, device=img.device)
-                        if time != 0:  # no noise when t == 0
-                            # img += torch.exp(0.5 * out['log_variance']) * noise - img_mean_values
-                            img += torch.exp(0.5 * out['log_variance']) * noise
+                    # sampling new img
+                    noise = torch.randn_like(img, device=img.device)
+                    if time != 0:  # no noise when t == 0
+                        img += torch.exp(0.5 * out['log_variance']) * noise
 
                     # detach result from graph, for the next iteration
                     img.detach_()
 
-                    # get the last iterate results
+                    # update pbar for the last alternating process
                     if alternate_ii == (alternate_len - 1):
 
                         loss_process.append(loss[0].item())
@@ -352,38 +283,22 @@ class GaussianDiffusion:
                         pbar_print_dictionary = {}
                         pbar_print_dictionary['time'] = time.cpu().tolist()
                         pbar_print_dictionary['loss'] = loss
-                        if quality_loss is not None:
-                            pbar_print_dictionary['quality'] = np.round(
-                                [ii.item() for ii in list(quality_loss.values())], decimals=4)
+                        # print auxiliary loss to the pbar
+                        if aux_loss is not None:
+                            pbar_print_dictionary['aux'] = np.round(
+                                [ii.item() for ii in list(aux_loss.values())], decimals=4)
+
+                        # print variables to pbar
                         for key_ii, value_ii in variable_dict.items():
                             current_var_value = np.round(value_ii.cpu().detach().squeeze().tolist(), decimals=3)
                             # in case the variable is a matrix
                             if len(current_var_value.shape) > 1:
-                                current_var_value = np.round([current_var_value.mean(), current_var_value.std()],
-                                                             decimals=3)
+                                current_var_value = \
+                                    np.round([current_var_value.mean(), current_var_value.std()], decimals=3)
                             pbar_print_dictionary[key_ii] = current_var_value
 
+                        # print the pbar
                         pbar.set_postfix(pbar_print_dictionary, refresh=False)
-
-                        # # prepare printings and logging
-                        # print_b_inf = [np.round(i, decimals=3) for i in b_inf.detach().cpu().squeeze().tolist()]
-                        # # check what is beta - if tensor - it is a non-revised uw model
-                        # if isinstance(beta, torch.Tensor):
-                        #     print_beta = [np.round(i, decimals=3) for i in
-                        #                   beta.detach().cpu().squeeze().squeeze().squeeze().tolist()]
-                        #     pbar.set_postfix({'loss': loss.item(),
-                        #                       'beta': print_beta,
-                        #                       'b_inf': print_b_inf}, refresh=False)
-                        # # if list - it is a revised uw model and include beta a and beta b
-                        # elif len(beta) == 2:
-                        #     print_beta_a = [np.round(i, decimals=3) for i in beta[0].detach().cpu().squeeze().tolist()]
-                        #     print_beta_b = [np.round(i, decimals=3) for i in beta[1].detach().cpu().squeeze().tolist()]
-                        #     pbar.set_postfix({'loss': loss,
-                        #                       'beta_a': print_beta_a,
-                        #                       'beta_b': print_beta_b,
-                        #                       'b_inf': print_b_inf}, refresh=False)
-                        # else:
-                        #     ValueError("Not recognized beta")
 
                 # almost original dps code
                 else:
@@ -396,115 +311,59 @@ class GaussianDiffusion:
                     pbar.set_postfix({'loss': loss.detach().cpu().item()}, refresh=False)
 
                 # save the images during the diffusion process
-                if record and (alternate_ii == (alternate_len - 1)) and ((idx % record_every == 0) or (idx == 1) or (idx == 999)):
+                if record and (alternate_ii == (alternate_len - 1)) and \
+                        ((idx % record_every == 0) or (idx == 1) or (idx == 999)):
 
                     # the RGBD image
                     mid_x_0_pred_tmp = out['pred_xstart'].detach().cpu()
 
-                    # split into RGB and D images
+                    # split into RGB and Depth images
                     rgb_record_tmp = 0.5 * (mid_x_0_pred_tmp[:, 0:3, :, :] + 1)
                     rgb_record_tmp_clip = torch.clamp(rgb_record_tmp, 0, 1)
                     rgb_record_tmp_mm = [utilso.min_max_norm_range(rgb_record_tmp[ii]) for ii in range(n_images)]
 
+                    # Depth
                     depth_record_tmp = mid_x_0_pred_tmp[:, 3, :, :]
 
                     # percentile + min max norm for the depth image
-                    depth_record_tmp_percentile_mm = [utilso.min_max_norm_range_percentile(
-                        depth_record_tmp[ii, :, :].unsqueeze(0), percent_low=0.05, percent_high=0.99).repeat(3, 1, 1) for
-                                                      ii in range(n_images)]
-
+                    depth_record_tmp_percentile_mm = \
+                        [utilso.min_max_norm_range_percentile(depth_record_tmp[ii, :, :].unsqueeze(0),
+                                                              percent_low=0.05, percent_high=0.99).repeat(3, 1, 1)
+                         for
+                         ii in range(n_images)]
                     # min max norm for the depth image
                     depth_record_tmp_mm = [utilso.min_max_norm_range(
                         depth_record_tmp[ii, :, :].unsqueeze(0)).repeat(3, 1, 1) for ii in range(n_images)]
 
-                    if pretrain_model == 'debka' and not check_prior:
-                        gradients_record_tmp = [utilso.min_max_norm_range(
-                            gradients[ii, :, :, :].abs()) for ii in range(n_images)]
-
                     for key_ii in rgb_record_dict:
-
                         # rgb: clip [0,1] after 0.5*(x+1), depth:  min max norm
                         rgb_record_dict[key_ii].append(rgb_record_tmp_clip[key_ii])
                         depth_record_dict[key_ii].append(depth_record_tmp_mm[key_ii])
-                        histogram_tensor = utilso.color_histogram(rgb_record_tmp_clip[key_ii], title=idx)
-                        histogram_record_dict[key_ii].append(histogram_tensor)
 
                         # rgb: min-max norm, depth: percentile + min-max norm
                         rgb_record_dict_mm[key_ii].append(rgb_record_tmp_mm[key_ii])
                         depth_record_dict_mm[key_ii].append(depth_record_tmp_percentile_mm[key_ii])
-                        histogram_tensor_mm = utilso.color_histogram(rgb_record_tmp_mm[key_ii],
-                                                                     title=f"{idx} "
-                                                                           f"[{np.round([rgb_record_tmp[key_ii].min()], decimals=2)},"
-                                                                           f"{np.round([rgb_record_tmp[key_ii].max()], decimals=2)}]")
-                        histogram_record_dict_mm[key_ii].append(histogram_tensor_mm)
-
-                        if pretrain_model == 'debka' and not check_prior:
-                            gradients_record_dict[key_ii].append(gradients_record_tmp[key_ii])
 
         # save the recorded images
         if record:
 
             for key_ii in rgb_record_dict:
                 # save rgb and depth information - images are clipped, depth is percentiled + min-max normalized
-                mid_im = make_grid(rgb_record_dict[key_ii] + depth_record_dict[key_ii] + histogram_record_dict[key_ii],
+                mid_im = make_grid(rgb_record_dict[key_ii] + depth_record_dict[key_ii],
                                    nrow=len(rgb_record_dict[key_ii]))
                 mid_im = utilso.clip_image(mid_im, scale=False, move=False, is_uint8=True).permute(1, 2, 0).numpy()
                 mid_im_pil = Image.fromarray(mid_im, mode="RGB")
-                # save the image
                 mid_im_pil.save(pjoin(save_root, f'image_{image_idx}_{key_ii}_process_g{global_iteration}.png'))
 
                 # save rgb and depth information - images and depth are min max normalized
-                mid_im = make_grid(
-                    rgb_record_dict_mm[key_ii] + depth_record_dict_mm[key_ii] + histogram_record_dict_mm[key_ii],
-                    nrow=len(rgb_record_dict[key_ii]))
+                mid_im = make_grid(rgb_record_dict_mm[key_ii] + depth_record_dict_mm[key_ii],
+                                   nrow=len(rgb_record_dict[key_ii]))
                 mid_im = utilso.clip_image(mid_im, scale=False, move=False, is_uint8=True).permute(1, 2, 0).numpy()
                 mid_im_pil = Image.fromarray(mid_im, mode="RGB")
-                # save the image
                 mid_im_pil.save(pjoin(save_root, f'image_{image_idx}_{key_ii}_process_g{global_iteration}_mm.png'))
 
-                # visualization of gradients information
-                # gradient_grid_list = []
-                # for grad_ii in gradients_record_dict[key_ii]:
-                #     gradient_grid_list_tmp = [grad_ii[0].unsqueeze(0).repeat(3, 1, 1),
-                #                               grad_ii[1].unsqueeze(0).repeat(3, 1, 1),
-                #                               grad_ii[2].unsqueeze(0).repeat(3, 1, 1),
-                #                               grad_ii[0:3],
-                #                               grad_ii[3].unsqueeze(0).repeat(3, 1, 1)]
-                #
-                #     gradient_grid_list += gradient_grid_list_tmp
-                # mid_gradients = make_grid(gradient_grid_list, nrow=5, pad_value=1.0)
-                # mid_gradients = utilso.clip_image(mid_gradients, scale=False, move=False,
-                #                                   is_uint8=True).permute(1, 2, 0).numpy()
-                # mid_gradients_pil = Image.fromarray(mid_gradients, mode="RGB")
-                # # save the image
-                # mid_gradients_pil.save(pjoin(save_root, f'image_{image_idx}_{key_ii}_gradients.png'))
-
         # return the relevant things
-        if pretrain_model == 'debka' and not check_prior:
-
-            # save the losses plot
-            fig, ax = plt.subplots(nrows=1, ncols=1)  # create figure & 1 axis
-            ax.plot(list(np.arange(factor * self.num_timesteps)), loss_process)
-            ax.set_xlabel('Diffusion time steps')
-            ax.set_ylabel('Loss')
-            ax.set_title(f"loss vs. Timesteps - image {image_idx}")
-
-            fig.savefig(
-                pjoin(save_root, f'image_{image_idx}_0_loss_g{global_iteration}.png'))  # save the figure to file
-            plt.close(fig)  # close the figure window
-
-            # save the time plot - interesting when doing an annealing time
-            if self.annealing_time:
-                fig, ax = plt.subplots(nrows=1, ncols=1)  # create figure & 1 axis
-                ax.plot(list(np.arange(total_steps)), time_val_list)
-                ax.set_xlabel('Diffusion time steps')
-                ax.set_ylabel('Value of time')
-                ax.set_title(f"Time Scheduler")
-
-                fig.savefig(pjoin(save_root,
-                                  f'image_{image_idx}_0_time_scheduler_g{global_iteration}.png'))  # save the figure to file
-                plt.close(fig)  # close the figure window
-
+        if pretrain_model == 'osmosis' and not check_prior:
             return img, variable_dict, loss, out['pred_xstart'].detach().cpu()
 
         else:

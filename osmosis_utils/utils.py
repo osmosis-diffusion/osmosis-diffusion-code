@@ -19,8 +19,6 @@ import torch.optim as optim
 import torch.optim.lr_scheduler as lr_scheduler
 import torchvision.transforms.functional as tvtf
 
-import wandb
-
 
 # %% image functions
 
@@ -324,12 +322,6 @@ def change_input_output_unet(model, in_channels=4, out_channels=8):
     model.out[-1] = nn.Conv2d(in_channels_out, out_channels, kernel_size, stride, padding)
 
     return model
-
-
-# %% wandb function
-
-def summ_fn_wandb(s, v, step):
-    wandb.log({s: v}, commit=False, step=step)
 
 
 # %% masked mse loss
@@ -749,8 +741,6 @@ def log_text(args):
                   f"\nManual seed: {args.manual_seed}" \
                   f"\nDepth type: {args.measurement['operator']['depth_type']}, value: {args.measurement['operator']['value']}"
 
-    log_txt_tmp += f"\nOptimize on multiple image: {args.repeat_batch_size}" if args.repeat_image else f"\nOptimize on single image"
-    log_txt_tmp += f"\nSample order: 1.Guide 2.Sample" if args.guide_and_sample else f"\nSample order: 1.Sample 2.Guide"
     log_txt_tmp += f"\nDegamma: {args.measurement['operator']['degamma']}"
 
     log_noise_txt = f"\nNoise: {args.measurement['noise']['name']}"
@@ -774,15 +764,6 @@ def log_text(args):
                        f"\n     Optimizations iters: {args.sample_pattern['n_iter']}, " \
                        f"\n     Update start from: {args.sample_pattern['update_start']}, end: {args.sample_pattern['update_end']}" \
                        f"\n     M: {args.sample_pattern['local_M']}, start: {args.sample_pattern['s_start']}, end: {args.sample_pattern['s_end']}"
-
-        if args.sample_pattern["backward_guidance"]["backward_guidance"]:
-            log_txt_tmp += f"\n     Backward Guidance: True" \
-                           f"\n     Start: {args.sample_pattern['backward_guidance']['back_start']}, " \
-                           f"End: {args.sample_pattern['backward_guidance']['back_end']}, " \
-                           f"lr: {args.sample_pattern['backward_guidance']['lr']}, " \
-                           f"Iterations: {args.sample_pattern['backward_guidance']['num_iters']}"
-        else:
-            log_txt_tmp += f"\n     Backward Guidance: False"
 
     return log_txt_tmp
 
