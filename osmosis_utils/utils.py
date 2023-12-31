@@ -1360,3 +1360,20 @@ def getUIQM(x):
     uiconm = _uiconm(x, 10)
     uiqm = (c1 * uicm) + (c2 * uism) + (c3 * uiconm)
     return uiqm
+
+
+# %% save depth tensor into rgb with colormap (instead of grayscale)
+
+def depth_tensor_to_color_image(tensor_image, colormap='virdis'):
+    cm = plt.get_cmap(colormap)
+
+    if len(tensor_image.shape) == 3:
+        tensor_image = tensor_image[0]
+
+    assert len(tensor_image.shape) == 2
+
+    # color the gray scale image
+    im_np = cm(tensor_image.numpy())
+    depth_im_ii = torch.tensor(im_np[:, :, 0:3]).permute(2, 0, 1)
+
+    return depth_im_ii
