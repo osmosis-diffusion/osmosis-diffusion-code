@@ -93,7 +93,7 @@ conditioning:
   params:
     loss_function: norm # norm, mse
     # if "none" so the rest has no meaning
-    loss_weight: depth # none, raw_nerf, depth, depth_mask_large - none if not underwater_physical(_revised) operator
+    loss_weight: depth # none, depth
     weight_function: gamma,1.4,1.4,1 # function, value
 
     # relevant only when --> method: gdp_pattern_diff_loss. # if "none" so the rest has no meaning
@@ -107,7 +107,6 @@ conditioning:
     scale_norm: original # original, depth, pgdiff, pgdiff_color, grad_norm, grad_abs, grad_abs_norm
 
     gradient_clip: True,0.001,0.005
-    change_clipping: 0. # relevant when gradient_clip: True
 
 # specify the loss and its weight/scale, if not specified so no auxiliary loss
 aux_loss:
@@ -119,16 +118,7 @@ data:
   batch_size: 1
   ground_truth: False
 
-#  name: UIEB
-#  root: D:\datasets\UIEB\mini_set\raw-890_subset
-#  gt: D:\datasets\UIEB\mini_set\reference-890_subset
-#  stop_after: -1 # -1
-#
-#  name: simulation_type_III
-#  root: D:\datasets\uwcnn
-#  stop_after: -1 # -1
-
-#  name: simulation_deborah
+#  name: simulation
 #  root: D:\master\comparison\osmosis_uw_sim\data\simulation
 #  stop_after: -1 # -1
 
@@ -136,26 +126,16 @@ data:
   root: D:\datasets\images_samples\haze_dana
   stop_after: -1
 
-#  name: prior_check
-#  root: D:\datasets\images_samples\check_prior_images
-#  stop_after: -1 # -1
-
 #  name: osmosis_lin_wb
 #  root: D:\datasets\images_samples\osmosis_uw_dataset_lin_wb_subset
-#  stop_after: -1 #
-
-#  name: specific_image
-#  root: D:\datasets\images_samples\specific_image
 #  stop_after: -1 #
 
 measurement:
   operator:
 
-    # haze_physical # underwater_physical_revised # underwater_physical_revised # underwater_physical, noise - for checking the prior
-    name: underwater_physical # underwater_physical, haze_physical
+    name: underwater_physical_revised # underwater_physical_revised, haze_physical, noise (for check prior)
 
-    optimizer: sgd # GD, adam, sgd - GD for gdp_pattern_diff_loss (different losses)
-    scheduler: none # none, steplr
+    optimizer: sgd # GD, adam, sgd
     degamma: False # True/False
 
     # does not matter for not underwater
@@ -178,12 +158,13 @@ measurement:
     phi_inf_learn_flag: True
 
     # haze_physical
-#    phi: 1.3,1.2,0.9
-#    phi_eta: 1e-5
-#    phi_learn_flag: True
+#    phi_ab: 1.3,1.2,0.9
+#    phi_ab_eta: 1e-5
+#    phi_ab_learn_flag: True
 
   noise:
-    name: clean
+    name: clean # clean - osmosis, gaussian - ps
+    # sigma: 0.001 # gaussian - ps
 
 
 

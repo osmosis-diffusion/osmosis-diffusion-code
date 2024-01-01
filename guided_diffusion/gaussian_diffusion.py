@@ -2,16 +2,16 @@ import math
 import os
 from os.path import join as pjoin
 from functools import partial
-import matplotlib
-
-matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+
 import numpy as np
 from PIL import Image
-import torch
 from tqdm.auto import tqdm
 
+import torch
 from torchvision.utils import make_grid
+import torchvision.transforms.functional as tvtf
+
 from .posterior_mean_variance import get_mean_processor, get_var_processor
 
 import osmosis_utils.utils as utilso
@@ -196,15 +196,11 @@ class GaussianDiffusion:
         img = x_start
         device = x_start.device
         global_iteration = kwargs.get("global_iteration", False)
+        original_file_name = kwargs.get("original_file_name", "image_0")
 
         if record:
-            n_images = img.shape[0]
-
-            rgb_record_dict = {ii: [] for ii in range(n_images)}
-            depth_record_dict = {ii: [] for ii in range(n_images)}
-
-            rgb_record_dict_mm = {ii: [] for ii in range(n_images)}
-            depth_record_dict_mm = {ii: [] for ii in range(n_images)}
+            rgb_record_list = []
+            depth_record_list = []
 
         loss_process = []
         factor = 1
@@ -226,8 +222,10 @@ class GaussianDiffusion:
                             (sample_pattern['start_guidance'] * self.num_timesteps >= time >= sample_pattern[
                                 'stop_guidance'] * self.num_timesteps)
 
-            # setting the alternate len (M from the gibbsDDRM paper or N from PGDiff paper)
+            # setting the alternate len (M from the gibbsDDRM paper)
             alternate_len = utilso.set_alternate_length(sample_pattern, idx, self.num_timesteps)
+
+            # for osmosis use alternate_len=1, means - no alternating
             for alternate_ii in range(alternate_len):
 
                 img.requires_grad = True if guidance_flag else False
@@ -262,12 +260,11 @@ class GaussianDiffusion:
                                                 sample_added_noise=sample_added_noise,
                                                 time_index=float(idx) / self.num_timesteps)
 
-
                     else:
                         # no guidance
                         img = out['sample']
 
-                    # sampling new img
+                    # sampling new img after guidance
                     noise = torch.randn_like(img, device=img.device)
                     if time != 0:  # no noise when t == 0
                         img += torch.exp(0.5 * out['log_variance']) * noise
@@ -300,7 +297,7 @@ class GaussianDiffusion:
                         # print the pbar
                         pbar.set_postfix(pbar_print_dictionary, refresh=False)
 
-                # almost original dps code
+                # almost original dps code - check prior
                 else:
                     img, loss = measurement_cond_fn(x_t=out['sample'],
                                                     measurement=measurement,
@@ -313,54 +310,27 @@ class GaussianDiffusion:
                 # save the images during the diffusion process
                 if record and (alternate_ii == (alternate_len - 1)) and \
                         ((idx % record_every == 0) or (idx == 1) or (idx == 999)):
-
                     # the RGBD image
                     mid_x_0_pred_tmp = out['pred_xstart'].detach().cpu()
 
                     # split into RGB and Depth images
                     rgb_record_tmp = 0.5 * (mid_x_0_pred_tmp[:, 0:3, :, :] + 1)
                     rgb_record_tmp_clip = torch.clamp(rgb_record_tmp, 0, 1)
-                    rgb_record_tmp_mm = [utilso.min_max_norm_range(rgb_record_tmp[ii]) for ii in range(n_images)]
 
                     # Depth
                     depth_record_tmp = mid_x_0_pred_tmp[:, 3, :, :]
-
                     # percentile + min max norm for the depth image
-                    depth_record_tmp_percentile_mm = \
-                        [utilso.min_max_norm_range_percentile(depth_record_tmp[ii, :, :].unsqueeze(0),
-                                                              percent_low=0.05, percent_high=0.99).repeat(3, 1, 1)
-                         for
-                         ii in range(n_images)]
-                    # min max norm for the depth image
-                    depth_record_tmp_mm = [utilso.min_max_norm_range(
-                        depth_record_tmp[ii, :, :].unsqueeze(0)).repeat(3, 1, 1) for ii in range(n_images)]
-
-                    for key_ii in rgb_record_dict:
-                        # rgb: clip [0,1] after 0.5*(x+1), depth:  min max norm
-                        rgb_record_dict[key_ii].append(rgb_record_tmp_clip[key_ii])
-                        depth_record_dict[key_ii].append(depth_record_tmp_mm[key_ii])
-
-                        # rgb: min-max norm, depth: percentile + min-max norm
-                        rgb_record_dict_mm[key_ii].append(rgb_record_tmp_mm[key_ii])
-                        depth_record_dict_mm[key_ii].append(depth_record_tmp_percentile_mm[key_ii])
+                    depth_record_tmp_pmm = utilso.min_max_norm_range_percentile(depth_record_tmp, percent_low=0.05,
+                                                                                percent_high=0.99).repeat(3, 1, 1)
+                    rgb_record_list.append(rgb_record_tmp_clip)
+                    depth_record_list.append(depth_record_tmp_pmm)
 
         # save the recorded images
         if record:
-
-            for key_ii in rgb_record_dict:
-                # save rgb and depth information - images are clipped, depth is percentiled + min-max normalized
-                mid_im = make_grid(rgb_record_dict[key_ii] + depth_record_dict[key_ii],
-                                   nrow=len(rgb_record_dict[key_ii]))
-                mid_im = utilso.clip_image(mid_im, scale=False, move=False, is_uint8=True).permute(1, 2, 0).numpy()
-                mid_im_pil = Image.fromarray(mid_im, mode="RGB")
-                mid_im_pil.save(pjoin(save_root, f'image_{image_idx}_{key_ii}_process_g{global_iteration}.png'))
-
-                # save rgb and depth information - images and depth are min max normalized
-                mid_im = make_grid(rgb_record_dict_mm[key_ii] + depth_record_dict_mm[key_ii],
-                                   nrow=len(rgb_record_dict[key_ii]))
-                mid_im = utilso.clip_image(mid_im, scale=False, move=False, is_uint8=True).permute(1, 2, 0).numpy()
-                mid_im_pil = Image.fromarray(mid_im, mode="RGB")
-                mid_im_pil.save(pjoin(save_root, f'image_{image_idx}_{key_ii}_process_g{global_iteration}_mm.png'))
+            # save rgb and depth information - images are clipped, depth is percentiled + min-max normalized
+            mid_grid = make_grid(rgb_record_list + depth_record_list, nrow=len(rgb_record_list))
+            mid_grid_pil = tvtf.to_pil_image(mid_grid)
+            mid_grid_pil.save(pjoin(save_root, f'{original_file_name}_g{global_iteration}_process.png'))
 
         # return the relevant things
         if pretrain_model == 'osmosis' and not check_prior:

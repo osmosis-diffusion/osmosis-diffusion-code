@@ -96,6 +96,7 @@ def main() -> None:
     if args.save_singles:
         save_singles_path = pjoin(out_path, f"single_images")
         os.makedirs(save_singles_path)
+
     # directory for the results a grid
     if args.save_grids:
         save_grids_path = pjoin(out_path, f"grid_results")
@@ -112,8 +113,6 @@ def main() -> None:
 
     # Do Inference, loop over all the images in the dataset
     for i, (ref_img, ref_img_name) in enumerate(loader):
-
-
 
         # in case there is a GT image
         if gt_flag:
@@ -193,7 +192,8 @@ def main() -> None:
                                                                     record=args.record_process,
                                                                     save_root=out_path, image_idx=i,
                                                                     record_every=args.record_every,
-                                                                    global_iteration=global_ii)
+                                                                    global_iteration=global_ii,
+                                                                    original_file_name=orig_file_name)
 
                 # output from the network without guidance - split into rgb and depth image
                 sample_rgb = out_xstart[:, 0:-1, :, :]
@@ -292,14 +292,14 @@ def main() -> None:
                 elif 'haze' in args.measurement['operator']['name']:
 
                     # create the ingredients for the hazed image
-                    phi = variable_dict['phi'].cpu()
-                    phi_image = phi * torch.ones_like(sample_rgb, device=torch.device('cpu')).squeeze(0)
-                    backscatter_image = phi_inf_image * (1 - torch.exp(-phi_image * sample_depth_calc))
-                    attenuation_image = torch.exp(-phi_image * sample_depth_calc)
+                    phi_ab = variable_dict['phi_ab'].cpu()
+                    phi_ab_image = phi_ab * torch.ones_like(sample_rgb, device=torch.device('cpu')).squeeze(0)
+                    backscatter_image = phi_inf_image * (1 - torch.exp(-phi_ab_image * sample_depth_calc))
+                    attenuation_image = torch.exp(-phi_ab_image * sample_depth_calc)
                     forward_predicted_image = sample_rgb_01 * attenuation_image + backscatter_image
 
                     # calculate the "clean" image from the predicted phis, phi_inf and ref image
-                    attenuation_flip_image = torch.exp(phi_image * sample_depth_calc)
+                    attenuation_flip_image = torch.exp(phi_ab_image * sample_depth_calc)
                     sample_rgb_recon = attenuation_flip_image * (ref_img_01.unsqueeze(0) - backscatter_image)
 
                     # calculate norm lost for visualization - both degraded_images and ref_img values should be [-1,1]
@@ -309,13 +309,13 @@ def main() -> None:
                         decimals=3)
 
                     # logging values of phi and phi_inf
-                    print_phi = np.round(phi.cpu().squeeze(), decimals=3)
+                    print_phi_ab = np.round(phi_ab.cpu().squeeze(), decimals=3)
                     print_phi_inf = np.round(phi_inf.cpu().squeeze(), decimals=3)
                     log_value_txt = f"\nInitialized values: " \
-                                    f"\nphi: [{measure_config['operator']['phi']}], lr: {measure_config['operator']['phi_eta']}" \
+                                    f"\nphi: [{measure_config['operator']['phi_ab']}], lr: {measure_config['operator']['phi_ab_eta']}" \
                                     f"\nphi_inf: [{measure_config['operator']['phi_inf']}], lr: {measure_config['operator']['phi_inf_eta']}" \
                                     f"\n\nResults values: " \
-                                    f"\nphi: {print_phi}" \
+                                    f"\nphi: {print_phi_ab}" \
                                     f"\nphi_inf: {print_phi_inf}" \
                                     f"\n\nNorm loss: {norm_loss_final}" \
                                     f"\nFinal loss: {np.round(np.array(loss), decimals=5)}"
@@ -333,10 +333,10 @@ def main() -> None:
                     # print phis and phi_inf on phi_inf image
                     if args.text_on_results:
                         image_text = f"\nInitialized values: " \
-                                     f"\nphi: [{measure_config['operator']['phi']}], lr: {measure_config['operator']['phi_eta']}" \
+                                     f"\nphi: [{measure_config['operator']['phi_ab']}], lr: {measure_config['operator']['phi_ab_eta']}" \
                                      f"\nphi_inf: [{measure_config['operator']['phi_inf']}], lr: {measure_config['operator']['phi_inf_eta']}" \
                                      f"\nResults values: " \
-                                     f"\nphi: {print_phi}" \
+                                     f"\nphi: {print_phi_ab}" \
                                      f"\nphi_inf: {print_phi_inf}" \
                                      f"\nNorm loss: {np.round(norm_loss_final, decimals=5)}"
 
