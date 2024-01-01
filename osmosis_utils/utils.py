@@ -716,32 +716,19 @@ def set_alternate_length(sample_pattern, time_index, num_timesteps):
 # %% logging text
 
 def log_text(args):
-    if args.conditioning['method'] == "gdp_pattern_diff_loss":
-        log_txt_losses = f"Loss Function: {args.conditioning['params']['loss_function']} " \
-                         f"\nweight: {args.conditioning['params']['loss_weight']}, " \
-                         f"weight_function: {args.conditioning['params']['weight_function']}" \
-                         f"\nweight diff_vars: {args.conditioning['params']['loss_weight_diff']}, " \
-                         f"weight_function: {args.conditioning['params']['weight_function_diff']}" \
-                         f"\ndiff_vars: {args.conditioning['params']['diff_vars']}"
-    else:
-        log_txt_losses = f"Loss Function: {args.conditioning['params']['loss_function']} " \
-                         f"\nweight: {args.conditioning['params']['loss_weight']}, " \
-                         f"weight_function: {args.conditioning['params']['weight_function']}"
 
     log_txt_tmp = f"\n\nGuidance Scale: {args.conditioning['params']['scale']}" \
-                  f"\nAnnealing Scheduler: {args.diffusion['annealing_time']}" \
-                  f"\n{log_txt_losses}" \
+                  f"\nLoss Function: {args.conditioning['params']['loss_function']}" \
+                  f"\nweight: {args.conditioning['params']['loss_weight']}, " \
+                  f"weight_function: {args.conditioning['params']['weight_function']}" \
                   f"\nScale Normalization: {args.conditioning['params']['scale_norm']}" \
-                  f"\nQuality Loss: {args.quality_loss['quality_loss']}" \
-                  f"\nMasked Loss according to beta a: {args.conditioning['params']['mask_depth']}" \
+                  f"\nAuxiliary Loss: {args.aux_loss['aux_loss']}" \
                   f"\nUnderwater model: {args.measurement['operator']['name']}" \
                   f"\nOptimize w.r.t: {'x_prev' if args.conditioning['params']['gradient_x_prev'] else 'x0'}" \
                   f"\nOptimizer model: {args.measurement['operator']['optimizer'] if 'optimizer' in list(args.measurement['operator'].keys()) else 'none'}, " \
-                  f"Scheduler: {args.measurement['operator']['scheduler']}" \
                   f"\nManual seed: {args.manual_seed}" \
-                  f"\nDepth type: {args.measurement['operator']['depth_type']}, value: {args.measurement['operator']['value']}"
-
-    log_txt_tmp += f"\nDegamma: {args.measurement['operator']['degamma']}"
+                  f"\nDepth type: {args.measurement['operator']['depth_type']}, value: {args.measurement['operator']['value']}" \
+                  f"\nDegamma: {args.measurement['operator']['degamma']}"
 
     log_noise_txt = f"\nNoise: {args.measurement['noise']['name']}"
     if 'sigma' in list(args.measurement['noise'].keys()):
@@ -1364,7 +1351,7 @@ def getUIQM(x):
 
 # %% save depth tensor into rgb with colormap (instead of grayscale)
 
-def depth_tensor_to_color_image(tensor_image, colormap='virdis'):
+def depth_tensor_to_color_image(tensor_image, colormap='viridis'):
     cm = plt.get_cmap(colormap)
 
     if len(tensor_image.shape) == 3:

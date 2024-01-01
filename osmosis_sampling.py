@@ -50,21 +50,13 @@ def main() -> None:
                                     transforms.CenterCrop(size=[256, 256]),
                                     transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
 
-    # For the case of simulated data - there is ground truth
-    if data_config['ground_truth'] and ('simulation_type' in data_config['name']):
-        gt_flag = True
-        water_type = data_config['name'].split("_")[-1]
-        dataset = datao.SimulationWaterTypeDataset(root_dir=data_config['root'], water_type=water_type,
-                                                   transform=transform)
-        loader = DataLoader(dataset, batch_size=data_config['batch_size'], shuffle=False)
-
-    # For the case of any data with ground truth
-    elif data_config['ground_truth'] and ('UIEB' in data_config['name']):
+    # For the case of any data with ground truth (simulation in our case)
+    if data_config['ground_truth']:
         gt_flag = True
         dataset = datao.ImagesFolder_GT(root_dir=data_config['root'], gt_dir=data_config['gt'], transform=transform)
         loader = DataLoader(dataset, batch_size=data_config['batch_size'], shuffle=False)
 
-    # for non ground truth dataset
+    # for non ground truth dataset (underwater and haze for our case)
     else:
         gt_flag = False
         dataset = datao.ImagesFolder(data_config['root'], transform)
@@ -82,10 +74,8 @@ def main() -> None:
     sample_pattern_config = args.sample_pattern
     aux_loss_config = args.aux_loss
 
-    # Working directory
+    # output directory
     measurement_name = measure_config['operator']['name']
-    # if "fM" in measure_config['operator']['name']:
-    #     measurement_name += f"_{measure_config['operator']['variance']}"
     out_path = pjoin(args.save_dir, measurement_name, args.data['name'])
     out_path = utilso.update_save_dir_date(out_path)
 
@@ -107,7 +97,8 @@ def main() -> None:
     logger.log(f"pretrained model file: {args.unet_model['model_path']}")
 
     # when checking the prior the information of the guidance is not relevant
-    if (not args.check_prior) and ("underwater" in args.measurement['operator']['name']):
+    # if (not args.check_prior) and ("underwater" in args.measurement['operator']['name']):
+    if (not args.check_prior):
         log_txt_tmp = utilso.log_text(args=args)
         logger.log(log_txt_tmp)
 
@@ -149,7 +140,7 @@ def main() -> None:
         # passing the "stable" arguments with the partial method
         sample_fn = partial(sampler.p_sample_loop, model=model, measurement_cond_fn=measurement_cond_fn,
                             pretrain_model=args.unet_model['pretrain_model'], check_prior=args.check_prior,
-                            sample_pattern=args.sample_pattern, guide_and_sample=args.guide_and_sample)
+                            sample_pattern=args.sample_pattern)
 
         logger.log(f"\nInference image {i}: {ref_img_name}\n")
         ref_img = ref_img.to(device)
@@ -193,11 +184,13 @@ def main() -> None:
                                                                     save_root=out_path, image_idx=i,
                                                                     record_every=args.record_every,
                                                                     global_iteration=global_ii,
-                                                                    original_file_name=orig_file_name)
+                                                                    original_file_name=orig_file_name,
+                                                                    save_grids_path=save_grids_path)
 
                 # output from the network without guidance - split into rgb and depth image
-                sample_rgb = out_xstart[:, 0:-1, :, :]
-                sample_depth_tmp = out_xstart[:, -1, :, :].unsqueeze(1).repeat(1, 3, 1, 1)
+                sample_rgb = out_xstart[0, 0:-1, :, :]
+                sample_depth_tmp = out_xstart[0, -1, :, :].unsqueeze(0)
+                sample_depth_tmp_rep = out_xstart[0, -1, :, :][None, None, ...].repeat(1, 3, 1, 1)
 
                 # "move" the rgb predicted image to start from 0
                 sample_rgb_01 = 0.5 * (sample_rgb + 1)
@@ -212,7 +205,7 @@ def main() -> None:
                 sample_depth_vis_pmm_color = utilso.depth_tensor_to_color_image(sample_depth_vis_pmm)
 
                 # depth for calculations
-                sample_depth_calc = utilso.convert_depth(sample_depth_tmp,
+                sample_depth_calc = utilso.convert_depth(sample_depth_tmp_rep,
                                                          depth_type=args.measurement['operator']['depth_type'],
                                                          value=args.measurement['operator']['value'])
 

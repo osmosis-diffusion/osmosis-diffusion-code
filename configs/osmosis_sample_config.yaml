@@ -92,18 +92,17 @@ conditioning:
   method: osmosis # osmosis # gdp_pattern_diff_loss # gdp_pattern # ps - for checking the prior
   params:
     loss_function: norm # norm, mse
-    # if "none" so the rest has no meaning
-    loss_weight: depth # none, depth
+
+    loss_weight: depth # none, depth # if "none" so the rest has no meaning
     weight_function: gamma,1.4,1.4,1 # function, value
 
     # relevant only when --> method: gdp_pattern_diff_loss. # if "none" so the rest has no meaning
     loss_weight_diff: depth # none, raw_nerf, inverse_depth, depth, depth_mask_large
     weight_function_diff: gamma,1.4,1.4,1. # function, value
-    diff_vars: beta_a # beta_a,beta_b,b_inf
 
     # when measurement operator is not underwater - set scale for depth to 0 (vR,vG,vB,vD=0)
     scale: 7,7,7,0.9 # 4,4,4,1 # 7,7,7,0.9
-    gradient_x_prev: True # if False - the graidient of the forward degradation is according x_0_pred
+    gradient_x_prev: True # if False - the gradient of the forward degradation is according x_0_pred
     scale_norm: original # original, depth, pgdiff, pgdiff_color, grad_norm, grad_abs, grad_abs_norm
 
     gradient_clip: True,0.001,0.005
@@ -116,19 +115,25 @@ aux_loss:
 
 data:
   batch_size: 1
-  ground_truth: False
+
 
 #  name: simulation
-#  root: D:\master\comparison\osmosis_uw_sim\data\simulation
-#  stop_after: -1 # -1
+#  root: .\data\simulation_1\input
+#  gt: .\data\simulation_1\gt
+#  root: .\data\simulation_2
+#  gt: .\data\simulation_1\gt
+#  stop_after: -1
+#  ground_truth: True
 
-  name: haze_dana
-  root: D:\datasets\images_samples\haze_dana
+#  name: haze
+#  root: .\data\haze
+#  stop_after: -1
+#  ground_truth: False
+
+  name: osmosis
+  root: .\data\underwater\high_res
   stop_after: -1
-
-#  name: osmosis_lin_wb
-#  root: D:\datasets\images_samples\osmosis_uw_dataset_lin_wb_subset
-#  stop_after: -1 #
+  ground_truth: False
 
 measurement:
   operator:
@@ -139,8 +144,8 @@ measurement:
     degamma: False # True/False
 
     # does not matter for not underwater
-    depth_type: gamma # original [0,1], contraction, move, min_max, gamma=((x+value[0])*value[1])^value[2]
-    value: 1.4,1.4,1 # 1.4,1.2,1 # it should be float in case of move and two numbers in case of min-max (0.6, 2)
+    depth_type: gamma # original- [0,1, gamma=((x+value[0])*value[1])^value[2]
+    value: 1.4,1.4,1
 
     # underwater_physical
     phi_a: 1.1,0.95,0.95

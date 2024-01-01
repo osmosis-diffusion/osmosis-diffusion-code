@@ -197,18 +197,17 @@ class GaussianDiffusion:
         device = x_start.device
         global_iteration = kwargs.get("global_iteration", False)
         original_file_name = kwargs.get("original_file_name", "image_0")
+        save_grids_path = kwargs.get("save_grids_path", None)
+
+        time_val_list = []
+        loss_process = []
 
         if record:
             rgb_record_list = []
             depth_record_list = []
 
-        loss_process = []
-        factor = 1
-        steps = self.num_timesteps
-        total_steps = factor * self.num_timesteps
+        total_steps = self.num_timesteps
         pbar = tqdm(list(range(total_steps))[::-1])
-
-        time_val_list = []
 
         # loop over the timestep
         for idx in pbar:
@@ -314,23 +313,25 @@ class GaussianDiffusion:
                     mid_x_0_pred_tmp = out['pred_xstart'].detach().cpu()
 
                     # split into RGB and Depth images
-                    rgb_record_tmp = 0.5 * (mid_x_0_pred_tmp[:, 0:3, :, :] + 1)
+                    rgb_record_tmp = 0.5 * (mid_x_0_pred_tmp[0, 0:3, :, :] + 1)
                     rgb_record_tmp_clip = torch.clamp(rgb_record_tmp, 0, 1)
 
                     # Depth
                     depth_record_tmp = mid_x_0_pred_tmp[:, 3, :, :]
                     # percentile + min max norm for the depth image
                     depth_record_tmp_pmm = utilso.min_max_norm_range_percentile(depth_record_tmp, percent_low=0.05,
-                                                                                percent_high=0.99).repeat(3, 1, 1)
+                                                                                percent_high=0.99)
+                    depth_record_tmp_pmm_color = utilso.depth_tensor_to_color_image(depth_record_tmp_pmm)
+
                     rgb_record_list.append(rgb_record_tmp_clip)
-                    depth_record_list.append(depth_record_tmp_pmm)
+                    depth_record_list.append(depth_record_tmp_pmm_color)
 
         # save the recorded images
-        if record:
+        if record and (save_grids_path is not None):
             # save rgb and depth information - images are clipped, depth is percentiled + min-max normalized
             mid_grid = make_grid(rgb_record_list + depth_record_list, nrow=len(rgb_record_list))
             mid_grid_pil = tvtf.to_pil_image(mid_grid)
-            mid_grid_pil.save(pjoin(save_root, f'{original_file_name}_g{global_iteration}_process.png'))
+            mid_grid_pil.save(pjoin(save_grids_path, f'{original_file_name}_g{global_iteration}_process.png'))
 
         # return the relevant things
         if pretrain_model == 'osmosis' and not check_prior:

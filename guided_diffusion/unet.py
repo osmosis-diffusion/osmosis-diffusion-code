@@ -88,7 +88,7 @@ def create_model(
     )
 
     # update number of channels according the pretrained model
-    if pretrain_model == "debka":
+    if pretrain_model == "osmosis":
         model = utilso.change_input_output_unet(model, in_channels=4, out_channels=8)
 
     try:
