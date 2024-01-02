@@ -728,7 +728,6 @@ def log_text(args):
                   f"\nOptimizer model: {args.measurement['operator']['optimizer'] if 'optimizer' in list(args.measurement['operator'].keys()) else 'none'}, " \
                   f"\nManual seed: {args.manual_seed}" \
                   f"\nDepth type: {args.measurement['operator']['depth_type']}, value: {args.measurement['operator']['value']}" \
-                  f"\nDegamma: {args.measurement['operator']['degamma']}"
 
     log_noise_txt = f"\nNoise: {args.measurement['noise']['name']}"
     if 'sigma' in list(args.measurement['noise'].keys()):
@@ -740,7 +739,7 @@ def log_text(args):
     log_grad_clip_txt = f"\nGradient Clipping: {gradient_clip_tmp[0]}"
     gradient_clip = str2bool(gradient_clip_tmp[0])
     if gradient_clip:
-        log_grad_clip_txt += f", min value: {gradient_clip_tmp[1]}, max value: {gradient_clip_tmp[2]}"
+        log_grad_clip_txt += f", min value: -{gradient_clip_tmp[1]}, max value: {gradient_clip_tmp[1]}"
     log_txt_tmp += log_grad_clip_txt
 
     if args.sample_pattern['pattern'] == 'original':

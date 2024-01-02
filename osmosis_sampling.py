@@ -190,7 +190,7 @@ def main() -> None:
                 # output from the network without guidance - split into rgb and depth image
                 sample_rgb = out_xstart[0, 0:-1, :, :]
                 sample_depth_tmp = out_xstart[0, -1, :, :].unsqueeze(0)
-                sample_depth_tmp_rep = out_xstart[0, -1, :, :][None, None, ...].repeat(1, 3, 1, 1)
+                sample_depth_tmp_rep = sample_depth_tmp.repeat(3, 1, 1)
 
                 # "move" the rgb predicted image to start from 0
                 sample_rgb_01 = 0.5 * (sample_rgb + 1)
@@ -210,16 +210,16 @@ def main() -> None:
                                                          value=args.measurement['operator']['value'])
 
                 # phi inf image - relevant for both underwater and haze
-                phi_inf = variable_dict['phi_inf'].cpu()
+                phi_inf = variable_dict['phi_inf'].cpu().squeeze(0)
                 phi_inf_image = phi_inf * torch.ones_like(sample_rgb, device=torch.device('cpu'))
 
                 # underwater model
                 if 'underwater' in args.measurement['operator']['name']:
 
                     # create the ingredients for the underwater image
-                    phi_a = variable_dict['phi_a'].cpu()
+                    phi_a = variable_dict['phi_a'].cpu().squeeze(0)
                     phi_a_image = phi_a * torch.ones_like(sample_rgb, device=torch.device('cpu'))
-                    phi_b = variable_dict['phi_b'].cpu()
+                    phi_b = variable_dict['phi_b'].cpu().squeeze(0)
                     phi_b_image = phi_b * torch.ones_like(sample_rgb, device=torch.device('cpu'))
 
                     # calculate the underwater parts
@@ -234,7 +234,7 @@ def main() -> None:
 
                     # calculate the "clean" image from the predicted phi's and ref image
                     attenuation_flip_image = torch.exp(phi_a_image * sample_depth_calc)
-                    sample_rgb_recon = attenuation_flip_image * (ref_img_01.unsqueeze(0) - backscatter_image)
+                    sample_rgb_recon = attenuation_flip_image * (ref_img_01 - backscatter_image)
 
                     # logging values of phi's
                     print_phi_a = [np.round(i, decimals=3) for i in phi_a.cpu().squeeze().tolist()]
@@ -277,23 +277,21 @@ def main() -> None:
                         if gt_flag:
                             image_text += add_calc_text
 
-                        phi_inf_image = utilso.add_text_torch_img(phi_inf_image[0],
-                                                                  image_text,
-                                                                  font_size=15).unsqueeze(0)
+                        phi_inf_image = utilso.add_text_torch_img(phi_inf_image, image_text, font_size=15)
 
                 # haze model
                 elif 'haze' in args.measurement['operator']['name']:
 
                     # create the ingredients for the hazed image
-                    phi_ab = variable_dict['phi_ab'].cpu()
-                    phi_ab_image = phi_ab * torch.ones_like(sample_rgb, device=torch.device('cpu')).squeeze(0)
+                    phi_ab = variable_dict['phi_ab'].cpu().squeeze(0)
+                    phi_ab_image = phi_ab * torch.ones_like(sample_rgb, device=torch.device('cpu'))
                     backscatter_image = phi_inf_image * (1 - torch.exp(-phi_ab_image * sample_depth_calc))
                     attenuation_image = torch.exp(-phi_ab_image * sample_depth_calc)
                     forward_predicted_image = sample_rgb_01 * attenuation_image + backscatter_image
 
                     # calculate the "clean" image from the predicted phis, phi_inf and ref image
                     attenuation_flip_image = torch.exp(phi_ab_image * sample_depth_calc)
-                    sample_rgb_recon = attenuation_flip_image * (ref_img_01.unsqueeze(0) - backscatter_image)
+                    sample_rgb_recon = attenuation_flip_image * (ref_img_01 - backscatter_image)
 
                     # calculate norm lost for visualization - both degraded_images and ref_img values should be [-1,1]
                     degraded_image = 2 * forward_predicted_image - 1
@@ -336,19 +334,10 @@ def main() -> None:
                         if gt_flag:
                             image_text += add_calc_text
 
-                        phi_inf_image = utilso.add_text_torch_img(phi_inf_image[0],
-                                                                  image_text,
-                                                                  font_size=15).unsqueeze(0)
+                        phi_inf_image = utilso.add_text_torch_img(phi_inf_image, image_text, font_size=15)
 
                     # log results for parameters
                     logger.log(log_value_txt)
-
-                    # loop over the predicted image - if single only one image will be saved
-
-                    if gt_flag:
-                        additional_image = gt_img_01.squeeze()
-                    else:
-                        additional_image = torch.zeros_like(sample_rgb_01, device=torch.device('cpu'))
 
                 else:
                     raise NotImplementedError("Operator can be for 'underwater' or 'haze' ")
@@ -360,7 +349,7 @@ def main() -> None:
                     ref_im_pil.save(pjoin(save_singles_path, f'{orig_file_name}_g{global_ii}_ref.png'))
 
                     # rgb clip - sample_rgb_01_clip
-                    sample_rgb_01_clip_pil = tvtf.to_pil_image(sample_rgb_01_clip[0])
+                    sample_rgb_01_clip_pil = tvtf.to_pil_image(sample_rgb_01_clip)
                     sample_rgb_01_clip_pil.save(
                         pjoin(save_singles_path, f'{orig_file_name}_g{global_ii}_rgb.png'))
 
@@ -371,6 +360,13 @@ def main() -> None:
 
                 # save extended results in the grid
                 if args.save_grids:
+
+                    # additional image can be empty image or the GT image if exists
+                    if gt_flag:
+                        additional_image = gt_img_01.squeeze()
+                    else:
+                        additional_image = torch.zeros_like(sample_rgb_01, device=torch.device('cpu'))
+
                     # main results visualization
                     grid_list = [ref_img_01, sample_rgb_01_clip, sample_depth_vis_pmm_color, additional_image,
                                  forward_predicted_image, sample_rgb_recon, backscatter_image, phi_inf_image]

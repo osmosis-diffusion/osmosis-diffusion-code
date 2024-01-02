@@ -104,9 +104,9 @@ class PosteriorSamplingOsmosis(ConditioningMethod):
 
         # if true - what values
         if self.gradient_clip:
-            self.gradient_clip_values = [float(gradient_clip_tmp[1].strip()), float(gradient_clip_tmp[2].strip())]
+            self.gradient_clip_value = float(gradient_clip_tmp[1].strip())
         else:
-            self.gradient_clip_values = None
+            self.gradient_clip_value = None
 
     def grad_and_value(self, x_prev, x_0_hat, measurement, **kwargs):
 
@@ -214,8 +214,8 @@ class PosteriorSamplingOsmosis(ConditioningMethod):
 
                     if self.gradient_clip:
                         grads = torch.clamp(x_prev.grad,
-                                            min=-self.gradient_clip_values[1],
-                                            max=self.gradient_clip_values[1])
+                                            min=-self.gradient_clip_value,
+                                            max=self.gradient_clip_value)
                     else:
                         grads = x_prev.grad
 

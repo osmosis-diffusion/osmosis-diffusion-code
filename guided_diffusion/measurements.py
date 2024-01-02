@@ -92,7 +92,6 @@ class HazePhysicalOperator(LearnableOperator):
                  batch_size=1, **kwargs):
 
         self.device = device
-        self.degamma = kwargs.get("degmma", False)
         self.depth_type = kwargs.get("depth_type", None)
         tmp_value = kwargs.get("value", None)
         self.value = utilso.get_depth_value(tmp_value)
@@ -122,9 +121,6 @@ class HazePhysicalOperator(LearnableOperator):
         # split into rgb and depth
         rgb = data[:, 0:-1, :, :]
         rgb_norm = 0.5 * (rgb + 1)
-        if self.degamma:
-            rgb_norm = torch.pow(rgb_norm, 2.2)
-
         depth_tmp = data[:, -1, :, :].unsqueeze(1)
 
         # convert depth to relevant coordinates
@@ -201,7 +197,6 @@ class UnderWaterPhysicalRevisedOperator(LearnableOperator):
                  batch_size=1, **kwargs):
 
         self.device = device
-        self.degamma = kwargs.get("degamma", False)
 
         self.depth_type = kwargs.get("depth_type", None)
         tmp_value = kwargs.get("value", None)
@@ -239,10 +234,6 @@ class UnderWaterPhysicalRevisedOperator(LearnableOperator):
         # split into rgb and depth
         rgb = data[:, 0:-1, :, :]
         rgb_norm = 0.5 * (rgb + 1)
-
-        if self.degamma:
-            rgb_norm = torch.pow(rgb_norm, 2.2)
-
         depth_tmp = data[:, -1, :, :].unsqueeze(1)
 
         # convert depth to relevant coordinates
