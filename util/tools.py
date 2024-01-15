@@ -53,6 +53,7 @@ def tensor_img_to_npimg(tensor_img):
 def normalize(x):
     return x.mul_(2).add_(-1)
 
+
 def same_padding(images, ksizes, strides, rates):
     assert len(images.size()) == 4
     batch_size, channel, rows, cols = images.size()
@@ -60,8 +61,8 @@ def same_padding(images, ksizes, strides, rates):
     out_cols = (cols + strides[1] - 1) // strides[1]
     effective_k_row = (ksizes[0] - 1) * rates[0] + 1
     effective_k_col = (ksizes[1] - 1) * rates[1] + 1
-    padding_rows = max(0, (out_rows-1)*strides[0]+effective_k_row-rows)
-    padding_cols = max(0, (out_cols-1)*strides[1]+effective_k_col-cols)
+    padding_rows = max(0, (out_rows - 1) * strides[0] + effective_k_row - rows)
+    padding_cols = max(0, (out_cols - 1) * strides[1] + effective_k_col - cols)
     # Pad the input
     padding_top = int(padding_rows / 2.)
     padding_left = int(padding_cols / 2.)

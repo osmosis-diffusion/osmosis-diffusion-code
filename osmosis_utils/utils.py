@@ -163,15 +163,6 @@ def clip_image(img, scale=True, move=True, is_uint8=True):
     return img
 
 
-#
-# def image_norm_range(img, scale=1., move=0., vmin=0, vmax=1, do_clip=False, is_uint8=False):
-#     img_tmp = scale * (img + move)
-#
-#     if do_clip:
-#         img_tmp = img_tmp.clamp(vmin, vmax)
-#     elif img_tmp.min() > vmin or img_tmp.max() < vmax:
-
-
 def gaussian_kernel(kernel_size, sigma=1., muu=0.):
     # Initializing value of x,y as grid of kernel size
     # in the range of kernel size
@@ -273,29 +264,6 @@ def add_text_torch_img(img, text, font_size=15):
     return b_inf_image
 
 
-# %% diffusion inference model
-class BasicInferenceModel(nn.Module):
-    def __init__(self, image_size):
-        super(BasicInferenceModel, self).__init__()
-        self.img = nn.Parameter(torch.randn(image_size))
-        self.img.requires_grad = True
-
-    def encode(self):
-        # return torch.tanh(self.img)
-        return self.img
-
-
-class MlpInferenceModel(nn.Module):
-    def __init__(self, image_size):
-        super(BasicInferenceModel, self).__init__()
-        self.img = nn.Parameter(torch.randn(image_size))
-        self.img.requires_grad = True
-
-    def encode(self):
-        # return torch.tanh(self.img)
-        return self.img
-
-
 # %% change input and outputs of the unet
 
 def change_input_output_unet(model, in_channels=4, out_channels=8):
@@ -388,14 +356,15 @@ class MaskedL1Loss(_Loss):
         return masked_l1_loss
 
 
-# %% read yaml config file
+# %% read yaml config file and parser functions
+
 def load_yaml(file_path: str) -> dict:
     with open(file_path) as f:
         config = yaml.load(f, Loader=yaml.FullLoader)
     return config
 
 
-# %% read yaml file (config file and write the content into txt file)
+# read yaml file (config file and write the content into txt file)
 
 def yaml_to_txt(yaml_file_path, txt_file_path):
     # Read YAML file
@@ -410,7 +379,8 @@ def yaml_to_txt(yaml_file_path, txt_file_path):
         txt_file.write(yaml_text)
 
 
-# %% dictionary and  argparser functions
+# dictionary and argparser functions
+
 def args_to_dict(args, keys):
     return {k: getattr(args, k) for k in keys}
 
@@ -448,7 +418,7 @@ def add_dict_to_namespace(namespace, args_dict):
         setattr(namespace, key, value)
 
 
-# %% save directory using date
+# save directory using date
 def update_save_dir_date(arguments_save_dir: str) -> str:
     today = datetime.date.today()
     today = f"{today.day}-{today.month}-{today.year % 2000}"
@@ -469,7 +439,7 @@ def update_save_dir_date(arguments_save_dir: str) -> str:
     return save_dir
 
 
-# %% checkpoint path update
+# checkpoint path update
 
 def update_checkpoint_path(save_dir_path: str) -> str:
     checkpoint_path = os.path.join(save_dir_path, "checkpoint")
@@ -477,7 +447,7 @@ def update_checkpoint_path(save_dir_path: str) -> str:
     return os.path.join(checkpoint_path, "checkpoint.pt")
 
 
-# %% update_relevant_arguments function
+# update_relevant_arguments function
 
 def update_relevant_arguments(args, save_dir_path: str):
     # cast to float relevant inputs
@@ -496,7 +466,7 @@ def update_relevant_arguments(args, save_dir_path: str):
     return args
 
 
-# %% arguments parser functions
+# arguments parser functions
 def arguments_from_file(config_file_path: str) -> argparse.Namespace:
     # read config file
     args_dict = load_yaml(config_file_path)
@@ -510,11 +480,7 @@ def arguments_from_file(config_file_path: str) -> argparse.Namespace:
     return args
 
 
-# %% string to array
-a = 10
-
-
-# %% os run
+# os run
 
 def get_os():
     if sys.platform.startswith('linux'):
@@ -528,6 +494,7 @@ def get_os():
 
 
 # %% return torch optimizer by name
+
 def get_optimizer(optimizer_name, model_parameters, **kwargs):
     optimizer_name = optimizer_name.lower()
 
@@ -561,46 +528,7 @@ def get_optimizer(optimizer_name, model_parameters, **kwargs):
         raise ValueError(f"Optimizer '{optimizer_name}' is not supported.")
 
 
-# %% return torch scheduler by name
-
-def get_scheduler(scheduler_name, optimizer, **scheduler_params):
-    # Dictionary mapping scheduler names to their corresponding classes
-    scheduler_name = scheduler_name.lower()
-
-    if optimizer is None or scheduler_name is None or scheduler_name == "none" or scheduler_name == "":
-        return None
-
-    scheduler_classes = {
-        "steplr": lr_scheduler.StepLR,
-        "multisteplr": lr_scheduler.MultiStepLR,
-        "exponentiallr": lr_scheduler.ExponentialLR,
-        "cosineannealinglr": lr_scheduler.CosineAnnealingLR,
-        "reducelronplateau": lr_scheduler.ReduceLROnPlateau,
-        "cycliclr": lr_scheduler.CyclicLR,
-        "onecyclelr": lr_scheduler.OneCycleLR,
-        # Add more scheduler classes as needed
-    }
-
-    if scheduler_name not in scheduler_classes:
-        raise ValueError(f"Unsupported scheduler: {scheduler_name}")
-
-    scheduler_cls = scheduler_classes[scheduler_name]
-    scheduler = scheduler_cls(optimizer, **scheduler_params)
-    return scheduler
-
-
-# %% change depth information from 0-1 to Conraction coordinates
-
-def depth_to_contraction(depth, eps=0.01):
-    disparity = 1 - depth + eps
-    depth_tmp = (1 / disparity)
-    new_depth = torch.where(depth_tmp <= 1, depth_tmp, 2 - disparity)
-
-    return new_depth
-
-
 # %% change depth function according to the input of depth type
-
 
 def get_depth_value(value_raw, **kwargs):
     if isinstance(value_raw, float):
@@ -627,18 +555,11 @@ def convert_depth(depth, depth_type, **kwargs):
     tmp_value = kwargs.get("value", None)
     value = get_depth_value(tmp_value)
 
-    if depth_type == "contraction":
-        depth_tmp = 0.5 * (depth + 1.0)
-        depth_out = depth_to_contraction(depth=depth_tmp, eps=0.01)
-
-    elif depth_type == "move":
+    if depth_type == "move":
         depth_out = depth + value
 
     elif depth_type == "gamma":
         depth_out = torch.pow((depth + value[0]) * value[1], value[2])
-
-    elif depth_type == "min_max":
-        depth_out = min_max_norm_range(depth, vmin=value[0], vmax=value[1], is_uint8=False)
 
     elif depth_type is None or depth_type == "original":
         depth_out = 0.5 * (depth + 1.0)
@@ -716,7 +637,6 @@ def set_alternate_length(sample_pattern, time_index, num_timesteps):
 # %% logging text
 
 def log_text(args):
-
     log_txt_tmp = f"\n\nGuidance Scale: {args.conditioning['params']['scale']}" \
                   f"\nLoss Function: {args.conditioning['params']['loss_function']}" \
                   f"\nweight: {args.conditioning['params']['loss_weight']}, " \
@@ -727,7 +647,7 @@ def log_text(args):
                   f"\nOptimize w.r.t: {'x_prev' if args.conditioning['params']['gradient_x_prev'] else 'x0'}" \
                   f"\nOptimizer model: {args.measurement['operator']['optimizer'] if 'optimizer' in list(args.measurement['operator'].keys()) else 'none'}, " \
                   f"\nManual seed: {args.manual_seed}" \
-                  f"\nDepth type: {args.measurement['operator']['depth_type']}, value: {args.measurement['operator']['value']}" \
+                  f"\nDepth type: {args.measurement['operator']['depth_type']}, value: {args.measurement['operator']['value']}"
 
     log_noise_txt = f"\nNoise: {args.measurement['noise']['name']}"
     if 'sigma' in list(args.measurement['noise'].keys()):
@@ -754,48 +674,6 @@ def log_text(args):
     return log_txt_tmp
 
 
-# %% guidance scale factor function
-
-
-def set_guidance_scale_norm(norm_type, x_0_hat=None, x_t=None, x_prev=None, sample_added_noise=None):
-    if norm_type is None or norm_type == 'original':
-        scale_norm = 1
-
-    elif norm_type == 'depth':
-        scale_norm = x_0_hat[:, 3, :, :] + 2
-
-    elif norm_type == 'pgdiff':
-        x_t_scale_norm = x_t if sample_added_noise is None else x_t + sample_added_noise
-        norm_value = torch.linalg.norm(x_t_scale_norm - x_prev.detach())
-        scale_norm = norm_value / (torch.linalg.norm(x_prev.grad.detach()) + 1e-3)
-
-    elif norm_type == 'pgdiff_color':
-        x_t_scale_norm = x_t if sample_added_noise is None else x_t + sample_added_noise
-        # x_t_scale_norm = x_t
-        diff = x_t_scale_norm - x_prev.detach()
-        gradient = x_prev.grad
-        coeff_r = torch.linalg.norm(diff[:, 0, :, :]) / torch.linalg.norm(gradient[:, 0, :, :] + 1e-3).reshape(1)
-        coeff_g = torch.linalg.norm(diff[:, 1, :, :]) / torch.linalg.norm(gradient[:, 1, :, :] + 1e-3).reshape(1)
-        coeff_b = torch.linalg.norm(diff[:, 2, :, :]) / torch.linalg.norm(gradient[:, 2, :, :] + 1e-3).reshape(1)
-        coeff = torch.cat((coeff_r, coeff_g, coeff_b, torch.tensor([1]).to(gradient.device)), 0)
-        scale_norm = coeff[None, ..., None, None]
-
-    elif norm_type == 'grad_norm':
-        scale_norm = torch.pow((torch.linalg.norm(x_prev.grad.detach()) + 1e-3), -1)
-
-    elif norm_type == 'grad_abs':
-        scale_norm = torch.pow((torch.abs(x_prev.grad.detach()) + 1e-3), -1)
-
-    elif norm_type == 'grad_abs_norm':
-        norm_value_tmp = min_max_norm_range(torch.abs(x_prev.grad.detach()), vmin=0, vmax=1, is_uint8=False)
-        scale_norm = torch.pow(norm_value_tmp + 1e-3, -1)
-
-    else:
-        raise NotImplementedError
-
-    return scale_norm
-
-
 # %% loss_weight - factor the difference between the  measurement to the degraded image
 
 def set_loss_weight(loss_weight_type, weight_function=None, degraded_image=None, x_0_hat=None):
@@ -814,19 +692,12 @@ def set_loss_weight(loss_weight_type, weight_function=None, degraded_image=None,
     if loss_weight_type == 'none' or loss_weight_type is None:
         loss_weight = 1
 
-    # in raw nerf they suggest to divide the differences by the image
-    elif loss_weight_type == 'raw_nerf':
-        loss_weight = torch.pow(degraded_image.detach() + 1e-4, -1)
-
     # try to multiply by the depth, the reason is to make the gradients of the far area larger since the
     # prediction from the u-net got close to zero at those areas
-    elif loss_weight_type == 'depth' or loss_weight_type == 'inverse_depth':
+    elif loss_weight_type == 'depth':
 
         depth_tmp = x_0_hat.detach()[:, 3, :, :].unsqueeze(1)
         loss_weight = convert_depth(depth=depth_tmp, depth_type=function_str, value=value)
-
-        if loss_weight_type == 'inverse_depth':
-            loss_weight = loss_weight.max() - loss_weight + loss_weight.min()
 
     else:
         raise NotImplementedError
@@ -834,25 +705,7 @@ def set_loss_weight(loss_weight_type, weight_function=None, degraded_image=None,
     return loss_weight
 
 
-# %% compute loss
 
-def compute_loss(loss_function, differance, weight=1):
-    differance_w = weight * differance
-
-    if loss_function == 'norm':
-        loss = torch.linalg.norm(differance_w)
-
-    # Mean square error
-    elif loss_function == "mse":
-        mse = (differance_w) ** 2
-        mse = mse.mean(dim=(1, 2, 3))
-        loss = mse.sum()
-
-    # No other loss
-    else:
-        raise NotImplementedError
-
-    return loss
 
 
 # %% create histogram image
@@ -896,456 +749,6 @@ def color_histogram(img, title=None):
     plt.close(fig)
 
     return hist_tensor
-
-
-# %% str2bool
-def str2bool(v):
-    return v.lower() in ("yes", "true", "t", "1")
-
-
-# %% clip gradient norm
-
-# [b,c,h,w]
-
-def gradient_clip_norm(gradients, max_value=0.001):
-    rgb_norm = torch.linalg.norm(gradients, dim=1, keepdim=True)
-    gradients_clipped = torch.where(rgb_norm > max_value, gradients * (max_value / rgb_norm), gradients)
-
-    return gradients_clipped
-
-
-# %% metrics
-a = 10
-'''
-Metrics for unferwater image quality evaluation.
-
-Author: Xuelei Chen
-Email: chenxuelei@hotmail.com
-
-Usage:
-python evaluate.py RESULT_PATH
-
-https://github.com/xueleichen/PSNR-SSIM-UCIQE-UIQM-Python
-
-uiqm, uciqe = nmetrics(corrected)
-
-'''
-
-
-#
-#
-def nmetrics(a):
-    rgb = a
-    lab = color.rgb2lab(a)
-    gray = color.rgb2gray(a)
-
-    # UCIQE
-    c1 = 0.4680
-    c2 = 0.2745
-    c3 = 0.2576
-    l = lab[:, :, 0]
-
-    # 1st term
-    chroma = (lab[:, :, 1] ** 2 + lab[:, :, 2] ** 2) ** 0.5
-    uc = np.mean(chroma)
-    sc = (np.mean((chroma - uc) ** 2)) ** 0.5
-
-    # 2nd term
-    top = int(np.round(0.01 * l.shape[0] * l.shape[1]))
-    sl = np.sort(l, axis=None)
-    isl = sl[::-1]
-    conl = np.mean(isl[:top]) - np.mean(sl[:top])
-
-    # 3rd term
-    satur = []
-    chroma1 = chroma.flatten()
-    l1 = l.flatten()
-    for i in range(len(l1)):
-        if chroma1[i] == 0:
-            satur.append(0)
-        elif l1[i] == 0:
-            satur.append(0)
-        else:
-            satur.append(chroma1[i] / l1[i])
-
-    us = np.mean(satur)
-
-    uciqe = c1 * sc + c2 * conl + c3 * us
-
-    # UIQM
-    p1 = 0.0282
-    p2 = 0.2953
-    p3 = 3.5753
-
-    # 1st term UICM
-    rg = rgb[:, :, 0] - rgb[:, :, 1]
-    yb = (rgb[:, :, 0] + rgb[:, :, 1]) / 2 - rgb[:, :, 2]
-    rgl = np.sort(rg, axis=None)
-    ybl = np.sort(yb, axis=None)
-    al1 = 0.1
-    al2 = 0.1
-    T1 = int(al1 * len(rgl))
-    T2 = int(al2 * len(rgl))
-    rgl_tr = rgl[T1:-T2]
-    ybl_tr = ybl[T1:-T2]
-
-    urg = np.mean(rgl_tr)
-    s2rg = np.mean((rgl_tr - urg) ** 2)
-    uyb = np.mean(ybl_tr)
-    s2yb = np.mean((ybl_tr - uyb) ** 2)
-
-    uicm = -0.0268 * np.sqrt(urg ** 2 + uyb ** 2) + 0.1586 * np.sqrt(s2rg + s2yb)
-
-    # 2nd term UISM (k1k2=8x8)
-    Rsobel = rgb[:, :, 0] * filters.sobel(rgb[:, :, 0])
-    Gsobel = rgb[:, :, 1] * filters.sobel(rgb[:, :, 1])
-    Bsobel = rgb[:, :, 2] * filters.sobel(rgb[:, :, 2])
-
-    Rsobel = np.round(Rsobel).astype(np.uint8)
-    Gsobel = np.round(Gsobel).astype(np.uint8)
-    Bsobel = np.round(Bsobel).astype(np.uint8)
-
-    Reme = eme(Rsobel)
-    Geme = eme(Gsobel)
-    Beme = eme(Bsobel)
-
-    uism = 0.299 * Reme + 0.587 * Geme + 0.114 * Beme
-
-    # 3rd term UIConM
-    uiconm = logamee(gray)
-
-    uiqm = p1 * uicm + p2 * uism + p3 * uiconm
-    return uiqm, uciqe
-
-
-def eme(ch, blocksize=8):
-    num_x = math.ceil(ch.shape[0] / blocksize)
-    num_y = math.ceil(ch.shape[1] / blocksize)
-
-    eme = 0
-    w = 2. / (num_x * num_y)
-    for i in range(num_x):
-
-        xlb = i * blocksize
-        if i < num_x - 1:
-            xrb = (i + 1) * blocksize
-        else:
-            xrb = ch.shape[0]
-
-        for j in range(num_y):
-
-            ylb = j * blocksize
-            if j < num_y - 1:
-                yrb = (j + 1) * blocksize
-            else:
-                yrb = ch.shape[1]
-
-            block = ch[xlb:xrb, ylb:yrb]
-
-            blockmin = float(np.min(block))
-            blockmax = float(np.max(block))
-
-            # # old version
-            # if blockmin == 0.0: eme += 0
-            # elif blockmax == 0.0: eme += 0
-            # else: eme += w * math.log(blockmax / blockmin)
-
-            # new version
-            if blockmin == 0: blockmin += 1
-            if blockmax == 0: blockmax += 1
-            eme += w * math.log(blockmax / blockmin)
-    return eme
-
-
-def plipsum(i, j, gamma=1026):
-    return i + j - i * j / gamma
-
-
-def plipsub(i, j, k=1026):
-    return k * (i - j) / (k - j)
-
-
-def plipmult(c, j, gamma=1026):
-    return gamma - gamma * (1 - j / gamma) ** c
-
-
-def logamee(ch, blocksize=8):
-    num_x = math.ceil(ch.shape[0] / blocksize)
-    num_y = math.ceil(ch.shape[1] / blocksize)
-
-    s = 0
-    w = 1. / (num_x * num_y)
-    for i in range(num_x):
-
-        xlb = i * blocksize
-        if i < num_x - 1:
-            xrb = (i + 1) * blocksize
-        else:
-            xrb = ch.shape[0]
-
-        for j in range(num_y):
-
-            ylb = j * blocksize
-            if j < num_y - 1:
-                yrb = (j + 1) * blocksize
-            else:
-                yrb = ch.shape[1]
-
-            block = ch[xlb:xrb, ylb:yrb]
-            blockmin = float(np.min(block))
-            blockmax = float(np.max(block))
-
-            top = plipsub(blockmax, blockmin)
-            bottom = plipsum(blockmax, blockmin)
-
-            m = top / bottom
-            if m == 0.:
-                s += 0
-            else:
-                s += (m) * np.log(m)
-
-    return plipmult(w, s)
-
-
-# result_path = sys.argv[1]
-#
-# result_dirs = os.listdir(result_path)
-#
-# sumuiqm, sumuciqe = 0., 0.
-#
-# N = 0
-# for imgdir in result_dirs:
-#     if '.png' in imgdir:
-#         # corrected image
-#         corrected = io.imread(os.path.join(result_path, imgdir))
-#
-#         uiqm, uciqe = nmetrics(corrected)
-#
-#         sumuiqm += uiqm
-#         sumuciqe += uciqe
-#         N += 1
-#
-#         with open(os.path.join(result_path, 'metrics.txt'), 'a') as f:
-#             f.write('{}: uiqm={} uciqe={}\n'.format(imgdir, uiqm, uciqe))
-#
-# muiqm = sumuiqm / N
-# muciqe = sumuciqe / N
-#
-# with open(os.path.join(result_path, 'metrics.txt'), 'a') as f:
-#     f.write('Average: uiqm={} uciqe={}\n'.format(muiqm, muciqe))
-#
-#
-a = 10
-# %% UIQM from FUnIE-GAN
-a = 10
-"""
-# > Modules for computing the Underwater Image Quality Measure (UIQM)
-# Maintainer: Jahid (email: islam034@umn.edu)
-"""
-
-
-def mu_a(x, alpha_L=0.1, alpha_R=0.1):
-    """
-      Calculates the asymetric alpha-trimmed mean
-    """
-    # sort pixels by intensity - for clipping
-    x = sorted(x)
-    # get number of pixels
-    K = len(x)
-    # calculate T alpha L and T alpha R
-    T_a_L = math.ceil(alpha_L * K)
-    T_a_R = math.floor(alpha_R * K)
-    # calculate mu_alpha weight
-    weight = (1 / (K - T_a_L - T_a_R))
-    # loop through flattened image starting at T_a_L+1 and ending at K-T_a_R
-    s = int(T_a_L + 1)
-    e = int(K - T_a_R)
-    val = sum(x[s:e])
-    val = weight * val
-    return val
-
-
-def s_a(x, mu):
-    val = 0
-    for pixel in x:
-        val += math.pow((pixel - mu), 2)
-    return val / len(x)
-
-
-def _uicm(x):
-    R = x[:, :, 0].flatten()
-    G = x[:, :, 1].flatten()
-    B = x[:, :, 2].flatten()
-    RG = R - G
-    YB = ((R + G) / 2) - B
-    mu_a_RG = mu_a(RG)
-    mu_a_YB = mu_a(YB)
-    s_a_RG = s_a(RG, mu_a_RG)
-    s_a_YB = s_a(YB, mu_a_YB)
-    l = math.sqrt((math.pow(mu_a_RG, 2) + math.pow(mu_a_YB, 2)))
-    r = math.sqrt(s_a_RG + s_a_YB)
-    return (-0.0268 * l) + (0.1586 * r)
-
-
-def sobel(x):
-    dx = ndimage.sobel(x, 0)
-    dy = ndimage.sobel(x, 1)
-    mag = np.hypot(dx, dy)
-    mag *= 255.0 / np.max(mag)
-    return mag
-
-
-def eme(x, window_size):
-    """
-      Enhancement measure estimation
-      x.shape[0] = height
-      x.shape[1] = width
-    """
-    # if 4 blocks, then 2x2...etc.
-    k1 = x.shape[1] / window_size
-    k2 = x.shape[0] / window_size
-    # weight
-    w = 2. / (k1 * k2)
-    blocksize_x = window_size
-    blocksize_y = window_size
-    # make sure image is divisible by window_size - doesn't matter if we cut out some pixels
-    x = x[:int(blocksize_y * k2), :int(blocksize_x * k1)]
-    val = 0
-    for l in range(int(k1)):
-        for k in range(int(k2)):
-            block = x[k * window_size:window_size * (k + 1), l * window_size:window_size * (l + 1)]
-            max_ = np.max(block)
-            min_ = np.min(block)
-            # bound checks, can't do log(0)
-            if min_ == 0.0:
-                val += 0
-            elif max_ == 0.0:
-                val += 0
-            else:
-                val += math.log(max_ / min_)
-    return w * val
-
-
-def _uism(x):
-    """
-      Underwater Image Sharpness Measure
-    """
-    # get image channels
-    R = x[:, :, 0]
-    G = x[:, :, 1]
-    B = x[:, :, 2]
-    # first apply Sobel edge detector to each RGB component
-    Rs = sobel(R)
-    Gs = sobel(G)
-    Bs = sobel(B)
-    # multiply the edges detected for each channel by the channel itself
-    R_edge_map = np.multiply(Rs, R)
-    G_edge_map = np.multiply(Gs, G)
-    B_edge_map = np.multiply(Bs, B)
-    # get eme for each channel
-    r_eme = eme(R_edge_map, 10)
-    g_eme = eme(G_edge_map, 10)
-    b_eme = eme(B_edge_map, 10)
-    # coefficients
-    lambda_r = 0.299
-    lambda_g = 0.587
-    lambda_b = 0.144
-    return (lambda_r * r_eme) + (lambda_g * g_eme) + (lambda_b * b_eme)
-
-
-def plip_g(x, mu=1026.0):
-    return mu - x
-
-
-def plip_theta(g1, g2, k):
-    g1 = plip_g(g1)
-    g2 = plip_g(g2)
-    return k * ((g1 - g2) / (k - g2))
-
-
-def plip_cross(g1, g2, gamma):
-    g1 = plip_g(g1)
-    g2 = plip_g(g2)
-    return g1 + g2 - ((g1 * g2) / (gamma))
-
-
-def plip_diag(c, g, gamma):
-    g = plip_g(g)
-    return gamma - (gamma * math.pow((1 - (g / gamma)), c))
-
-
-def plip_multiplication(g1, g2):
-    return plip_phiInverse(plip_phi(g1) * plip_phi(g2))
-    # return plip_phiInverse(plip_phi(plip_g(g1)) * plip_phi(plip_g(g2)))
-
-
-def plip_phiInverse(g):
-    plip_lambda = 1026.0
-    plip_beta = 1.0
-    return plip_lambda * (1 - math.pow(math.exp(-g / plip_lambda), 1 / plip_beta));
-
-
-def plip_phi(g):
-    plip_lambda = 1026.0
-    plip_beta = 1.0
-    return -plip_lambda * math.pow(math.log(1 - g / plip_lambda), plip_beta)
-
-
-def _uiconm(x, window_size):
-    """
-      Underwater image contrast measure
-      https://github.com/tkrahn108/UIQM/blob/master/src/uiconm.cpp
-      https://ieeexplore.ieee.org/abstract/document/5609219
-    """
-    plip_lambda = 1026.0
-    plip_gamma = 1026.0
-    plip_beta = 1.0
-    plip_mu = 1026.0
-    plip_k = 1026.0
-    # if 4 blocks, then 2x2...etc.
-    k1 = x.shape[1] / window_size
-    k2 = x.shape[0] / window_size
-    # weight
-    w = -1. / (k1 * k2)
-    blocksize_x = window_size
-    blocksize_y = window_size
-    # make sure image is divisible by window_size - doesn't matter if we cut out some pixels
-    x = x[:int(blocksize_y * k2), :int(blocksize_x * k1)]
-    # entropy scale - higher helps with randomness
-    alpha = 1
-    val = 0
-    for l in range(int(k1)):
-        for k in range(int(k2)):
-            block = x[k * window_size:window_size * (k + 1), l * window_size:window_size * (l + 1), :]
-            max_ = np.max(block)
-            min_ = np.min(block)
-            top = max_ - min_
-            bot = max_ + min_
-            if math.isnan(top) or math.isnan(bot) or bot == 0.0 or top == 0.0:
-                val += 0.0
-            else:
-                val += alpha * math.pow((top / bot), alpha) * math.log(top / bot)
-            # try: val += plip_multiplication((top/bot),math.log(top/bot))
-    return w * val
-
-
-def getUIQM(x):
-    """
-      Function to return UIQM to be called from other programs
-      x: image
-    """
-    x = x.astype(np.float32)
-    ### UCIQE: https://ieeexplore.ieee.org/abstract/document/7300447
-    # c1 = 0.4680; c2 = 0.2745; c3 = 0.2576
-    ### UIQM https://ieeexplore.ieee.org/abstract/document/7305804
-    c1 = 0.0282;
-    c2 = 0.2953;
-    c3 = 3.5753
-    uicm = _uicm(x)
-    uism = _uism(x)
-    uiconm = _uiconm(x, 10)
-    uiqm = (c1 * uicm) + (c2 * uism) + (c3 * uiconm)
-    return uiqm
 
 
 # %% save depth tensor into rgb with colormap (instead of grayscale)

@@ -1,5 +1,5 @@
 # saving directory
-save_dir: .\results
+save_dir: results
 
 degamma_input: False # use it for not linear haze image
 manual_seed: 0
@@ -83,7 +83,7 @@ unet_model:
   use_new_attention_order: False
 
   # pretrained model
-  model_path: .\models\osmosis_outdoor.pt
+  model_path: osmosis_outdoor.pt
   pretrain_model: osmosis  # osmosis, imagenet
 
 # diffusion configurations
@@ -110,14 +110,9 @@ conditioning:
     loss_weight: depth # none, depth # if "none" so the rest has no meaning
     weight_function: gamma,1.4,1.4,1 # function, value
 
-    # relevant only when --> method: gdp_pattern_diff_loss. # if "none" so the rest has no meaning
-    loss_weight_diff: depth # none, raw_nerf, inverse_depth, depth, depth_mask_large
-    weight_function_diff: gamma,1.4,1.4,1. # function, value
-
     # when measurement operator is not underwater - set scale for depth to 0 (vR,vG,vB,vD=0)
     scale: 7,7,7,0.9
     gradient_x_prev: True # if False - the gradient of the forward degradation is according x_0_pred
-    scale_norm: original # original, depth, pgdiff, pgdiff_color, grad_norm, grad_abs, grad_abs_norm
 
     gradient_clip: True,0.005
 
@@ -152,7 +147,7 @@ data:
 measurement:
   operator:
 
-    name: haze_physical # underwater_physical_revised, haze_physical, noise (for check prior)
+    name: underwater_physical_revised # underwater_physical_revised, haze_physical, noise (for check prior)
 
     optimizer: sgd # GD, adam, sgd
 

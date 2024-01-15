@@ -235,7 +235,6 @@ class GaussianDiffusion:
 
                 # calculating the noise for future calculations
                 current_additional_noise = torch.randn_like(out['mean'], device=img.device)
-                sample_added_noise = current_additional_noise * torch.exp(0.5 * out['log_variance'])
 
                 # there is no use of the noisy measurement, do we need it? I don't know yet
                 noisy_measurement = self.q_sample(measurement, t=time)
@@ -256,7 +255,6 @@ class GaussianDiffusion:
                                                 x_prev=img,
                                                 x_0_hat=out['pred_xstart'],
                                                 freeze_phi=freeze_phi,
-                                                sample_added_noise=sample_added_noise,
                                                 time_index=float(idx) / self.num_timesteps)
 
                     else:

@@ -81,8 +81,6 @@ class PosteriorSamplingOsmosis(ConditioningMethod):
         self.n_iter = kwargs.get('n_iter', 1)
         self.update_start = kwargs.get('update_start', 1.0)
 
-        self.scale_norm = kwargs.get('scale_norm', None)
-
         # Auxiliary loss information
         aux_loss_dict = kwargs.get("aux_loss", None)
         if aux_loss_dict is not None:
@@ -148,7 +146,6 @@ class PosteriorSamplingOsmosis(ConditioningMethod):
     def conditioning(self, x_prev, x_t, x_0_hat, measurement, **kwargs):
 
         freeze_phi = kwargs.get("freeze_phi", False)
-        sample_added_noise = kwargs.get("sample_added_noise", None)
         time_index = kwargs.get("time_index", None)
 
         # when the gradient is w.r.t x0, the x_prev gradients and history of the x0 prediction are not required
@@ -202,12 +199,16 @@ class PosteriorSamplingOsmosis(ConditioningMethod):
             # update x_t
             with torch.no_grad():
 
-                # update guidance scale
-                scale_norm = utilso.set_guidance_scale_norm(norm_type=self.scale_norm, x_0_hat=x_0_hat.detach(),
-                                                            x_t=x_t.detach(), x_prev=x_prev,
-                                                            sample_added_noise=sample_added_noise)
+                # remove - opher
+                # # update guidance scale
+                # scale_norm = utilso.set_guidance_scale_norm(norm_type=self.scale_norm, x_0_hat=x_0_hat.detach(),
+                #                                             x_t=x_t.detach(), x_prev=x_prev,
+                #                                             sample_added_noise=sample_added_noise)
+                # # reshape the scale according to [b,c,h,w]
+                # guidance_scale = scale_norm * self.scale[None, ..., None, None].to(x_prev.device)
+
                 # reshape the scale according to [b,c,h,w]
-                guidance_scale = scale_norm * self.scale[None, ..., None, None].to(x_prev.device)
+                guidance_scale = self.scale[None, ..., None, None].to(x_prev.device)
 
                 # update x_t - gradient w.r.t x_t
                 if self.gradient_x_prev:

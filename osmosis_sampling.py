@@ -37,6 +37,7 @@ def main() -> None:
     # read the config file and return an argsparse Namespace object
     args = utilso.arguments_from_file(CONFIG_FILE)
     args.image_size = args.unet_model['image_size']
+    args.unet_model['model_path'] = pjoin('.', 'models', args.unet_model['model_path'])
 
     # Device setting
     device = torch.device("cuda") if torch.cuda.is_available() else torch.device('cpu')
@@ -76,7 +77,7 @@ def main() -> None:
 
     # output directory
     measurement_name = measure_config['operator']['name']
-    out_path = pjoin(args.save_dir, measurement_name, args.data['name'])
+    out_path = pjoin(".", args.save_dir, measurement_name, args.data['name'])
     out_path = utilso.update_save_dir_date(out_path)
 
     # create txt file with the configurations
