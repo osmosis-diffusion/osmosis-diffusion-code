@@ -1,0 +1,55 @@
+# saving directory
+save_dir: results
+number_of_images: 5
+
+manual_seed: 0
+save_singles: True # save single reference image, restored RGB image and depth estimation image
+save_grids: True
+
+# record the sampling process
+record_process: True
+record_every: 200
+
+# change unet input and output - for RGBD
+change_input_output_channels: True
+input_channels: 4  # RGBD
+output_channels: 8  # RGBD * 2 - learning sigma = True, if False 4
+
+# unet model configurations
+unet_model:
+  image_size: 256
+  num_channels: 256
+  num_res_blocks: 2
+  channel_mult: ""
+  learn_sigma: True
+  class_cond: False
+  use_checkpoint: False
+  attention_resolutions: 32, 16, 8
+  num_heads: 4
+  num_head_channels: 64
+  num_heads_upsample: -1
+  use_scale_shift_norm: True
+  dropout: 0.0
+  resblock_updown: True
+  use_fp16: False
+  use_new_attention_order: False
+
+  # pretrained model
+  model_path: osmosis_outdoor.pt
+  pretrain_model: osmosis  # osmosis, imagenet
+
+# diffusion configurations
+diffusion:
+  sampler: ddpm
+  steps: 1000
+  noise_schedule: linear # linear, cosine
+  model_mean_type: epsilon
+  model_var_type: learned_range
+
+  dynamic_threshold: False
+  clip_denoised: False
+  min_max_denoised: False
+
+  rescale_timesteps: False
+  timestep_respacing: 1000
+

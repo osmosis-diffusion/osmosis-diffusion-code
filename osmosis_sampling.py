@@ -109,12 +109,12 @@ def main() -> None:
 
         # in case there is a GT image
         if gt_flag:
-
-            gt_rgb_img = ref_img[1]
+            gt_rgb_img = ref_img[1].squeeze()
             gt_rgb_img_01 = 0.5 * (gt_rgb_img + 1)
 
-            gt_depth_img = ref_img[2]
+            gt_depth_img = ref_img[2].squeeze()
             gt_depth_img_01 = 0.5 * (gt_depth_img + 1)
+            gt_depth_img_01 = utilso.depth_tensor_to_color_image(gt_depth_img_01)
 
             ref_img = ref_img[0]
 
@@ -264,13 +264,14 @@ def main() -> None:
                         psnr_ob = PeakSignalNoiseRatio(data_range=(0., 1.))
                         ssim_ob = StructuralSimilarityIndexMeasure(data_range=(0., 1.))
 
-                        psnr = psnr_ob(sample_rgb_01, gt_rgb_img_01)
-                        ssim = ssim_ob(sample_rgb_01, gt_rgb_img_01)
+                        psnr = psnr_ob(sample_rgb_01.unsqueeze(0), gt_rgb_img_01.unsqueeze(0))
+                        ssim = ssim_ob(sample_rgb_01.unsqueeze(0), gt_rgb_img_01.unsqueeze(0))
 
                         add_calc_text = f"\nPSNR: {np.round([psnr], decimals=3)}, SSIM: {np.round([ssim], decimals=3)}\n"
                         log_value_txt += add_calc_text
 
                     # print phi's on phi_inf image
+                    # opher remove - maybe
                     if args.text_on_results:
                         image_text = f"\nInitialized values: " \
                                      f"\nphi_a: [{measure_config['operator']['phi_a']}], lr: {measure_config['operator']['phi_a_eta']}" \
@@ -283,9 +284,9 @@ def main() -> None:
                                      f"\nNorm loss: {np.round(norm_loss_final, decimals=5)}"
                         if gt_flag:
                             image_text += add_calc_text
-
                         phi_inf_image = utilso.add_text_torch_img(phi_inf_image, image_text, font_size=15)
-
+                    # log results for parameters
+                    logger.log(log_value_txt)
                 # haze model
                 elif 'haze' in args.measurement['operator']['name']:
 
@@ -310,25 +311,16 @@ def main() -> None:
                     print_phi_ab = np.round(phi_ab.cpu().squeeze(), decimals=3)
                     print_phi_inf = np.round(phi_inf.cpu().squeeze(), decimals=3)
                     log_value_txt = f"\nInitialized values: " \
-                                    f"\nphi: [{measure_config['operator']['phi_ab']}], lr: {measure_config['operator']['phi_ab_eta']}" \
+                                    f"\nphi_ab: [{measure_config['operator']['phi_ab']}], lr: {measure_config['operator']['phi_ab_eta']}" \
                                     f"\nphi_inf: [{measure_config['operator']['phi_inf']}], lr: {measure_config['operator']['phi_inf_eta']}" \
                                     f"\n\nResults values: " \
-                                    f"\nphi: {print_phi_ab}" \
+                                    f"\nphi_ab: {print_phi_ab}" \
                                     f"\nphi_inf: {print_phi_inf}" \
                                     f"\n\nNorm loss: {norm_loss_final}" \
                                     f"\nFinal loss: {np.round(np.array(loss), decimals=5)}"
 
-                    if gt_flag:
-                        psnr_ob = PeakSignalNoiseRatio(data_range=(0., 1.))
-                        ssim_ob = StructuralSimilarityIndexMeasure(data_range=(0., 1.))
-
-                        psnr = psnr_ob(sample_rgb_01, gt_rgb_img_01)
-                        ssim = ssim_ob(sample_rgb_01, gt_rgb_img_01)
-
-                        add_calc_text = f"\nPSNR: {np.round([psnr], decimals=3)}, SSIM: {np.round([ssim], decimals=3)}\n"
-                        log_value_txt += add_calc_text
-
                     # print phis and phi_inf on phi_inf image
+                    # opher remove - maybe
                     if args.text_on_results:
                         image_text = f"\nInitialized values: " \
                                      f"\nphi: [{measure_config['operator']['phi_ab']}], lr: {measure_config['operator']['phi_ab_eta']}" \
@@ -368,16 +360,14 @@ def main() -> None:
                 # save extended results in the grid
                 if args.save_grids:
 
-                    # additional image can be empty image or the GT image if exists
-                    if gt_flag:
-                        additional_image = gt_rgb_img_01.squeeze()
-                    else:
-                        additional_image = torch.zeros_like(sample_rgb_01, device=torch.device('cpu'))
+                    grid_list = [ref_img_01, sample_rgb_01_clip, sample_depth_vis_pmm_color]
 
-                    # main results visualization
-                    grid_list = [ref_img_01, sample_rgb_01_clip, sample_depth_vis_pmm_color, additional_image,
-                                 forward_predicted_image, sample_rgb_recon, backscatter_image, phi_inf_image]
-                    results_grid = make_grid(grid_list, nrow=4, pad_value=1.)
+                    # there is ground truth in the case of simulation
+                    if gt_flag:
+                        grid_list += [torch.zeros_like(sample_rgb_01, device=torch.device('cpu')),
+                                      gt_rgb_img_01, gt_depth_img_01]
+
+                    results_grid = make_grid(grid_list, nrow=3, pad_value=1.)
                     results_grid = utilso.clip_image(results_grid, scale=False, move=False, is_uint8=True) \
                         .permute(1, 2, 0).numpy()
                     results_pil = Image.fromarray(results_grid, mode="RGB")
@@ -419,7 +409,7 @@ def main() -> None:
 
                 # create images grid
                 if args.save_grids:
-                    grid_list = [ref_img_01, sample_rgb_01_clip, sample_depth_vis_pmm]
+                    grid_list = [ref_img_01, sample_rgb_01_clip, sample_depth_vis_pmm_color]
                     results_grid = make_grid(grid_list, nrow=3, pad_value=1.)
                     results_grid = utilso.clip_image(results_grid, scale=False, move=False, is_uint8=True)
                     results_pil = tvtf.to_pil_image(results_grid)

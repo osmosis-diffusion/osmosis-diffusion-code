@@ -704,9 +704,6 @@ def set_loss_weight(loss_weight_type, weight_function=None, degraded_image=None,
     return loss_weight
 
 
-
-
-
 # %% create histogram image
 
 def color_histogram(img, title=None):
@@ -754,6 +751,9 @@ def color_histogram(img, title=None):
 
 def depth_tensor_to_color_image(tensor_image, colormap='viridis'):
     cm = plt.get_cmap(colormap)
+
+    if len(tensor_image.shape) == 4:
+        tensor_image = tensor_image.squeeze()
 
     if len(tensor_image.shape) == 3:
         tensor_image = tensor_image[0]
