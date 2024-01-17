@@ -641,7 +641,6 @@ def log_text(args):
                   f"\nLoss Function: {args.conditioning['params']['loss_function']}" \
                   f"\nweight: {args.conditioning['params']['loss_weight']}, " \
                   f"weight_function: {args.conditioning['params']['weight_function']}" \
-                  f"\nScale Normalization: {args.conditioning['params']['scale_norm']}" \
                   f"\nAuxiliary Loss: {args.aux_loss['aux_loss']}" \
                   f"\nUnderwater model: {args.measurement['operator']['name']}" \
                   f"\nOptimize w.r.t: {'x_prev' if args.conditioning['params']['gradient_x_prev'] else 'x0'}" \

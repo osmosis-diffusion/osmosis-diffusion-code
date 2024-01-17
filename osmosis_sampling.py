@@ -5,8 +5,7 @@ import numpy as np
 from functools import partial
 import os
 from os.path import join as pjoin
-import argparse
-import yaml
+from argparse import ArgumentParser
 from PIL import Image, ImageDraw, ImageFont
 import datetime
 
@@ -28,7 +27,8 @@ from osmosis_utils import logger
 import osmosis_utils.utils as utilso
 import osmosis_utils.data as datao
 
-CONFIG_FILE = r".\configs\osmosis_sample_config.yaml"
+
+# CONFIG_FILE = r".\configs\osmosis_sample_config.yaml"
 
 
 # %% main sampling
@@ -54,7 +54,8 @@ def main() -> None:
     # For the case of any data with ground truth (simulation in our case)
     if data_config['ground_truth']:
         gt_flag = True
-        dataset = datao.ImagesFolder_GT(root_dir=data_config['root'], gt_dir=data_config['gt'], transform=transform)
+        dataset = datao.ImagesFolder_GT(root_dir=data_config['root'], gt_rgb_dir=data_config['gt_rgb'],
+                                        gt_depth_dir=data_config['gt_depth'], transform=transform)
         loader = DataLoader(dataset, batch_size=data_config['batch_size'], shuffle=False)
 
     # for non ground truth dataset (underwater and haze for our case)
@@ -108,8 +109,13 @@ def main() -> None:
 
         # in case there is a GT image
         if gt_flag:
-            gt_img = ref_img[1]
-            gt_img_01 = 0.5 * (gt_img + 1)
+
+            gt_rgb_img = ref_img[1]
+            gt_rgb_img_01 = 0.5 * (gt_rgb_img + 1)
+
+            gt_depth_img = ref_img[2]
+            gt_depth_img_01 = 0.5 * (gt_depth_img + 1)
+
             ref_img = ref_img[0]
 
         # start count time
@@ -258,8 +264,8 @@ def main() -> None:
                         psnr_ob = PeakSignalNoiseRatio(data_range=(0., 1.))
                         ssim_ob = StructuralSimilarityIndexMeasure(data_range=(0., 1.))
 
-                        psnr = psnr_ob(sample_rgb_01, gt_img_01)
-                        ssim = ssim_ob(sample_rgb_01, gt_img_01)
+                        psnr = psnr_ob(sample_rgb_01, gt_rgb_img_01)
+                        ssim = ssim_ob(sample_rgb_01, gt_rgb_img_01)
 
                         add_calc_text = f"\nPSNR: {np.round([psnr], decimals=3)}, SSIM: {np.round([ssim], decimals=3)}\n"
                         log_value_txt += add_calc_text
@@ -316,8 +322,8 @@ def main() -> None:
                         psnr_ob = PeakSignalNoiseRatio(data_range=(0., 1.))
                         ssim_ob = StructuralSimilarityIndexMeasure(data_range=(0., 1.))
 
-                        psnr = psnr_ob(sample_rgb_01, gt_img_01)
-                        ssim = ssim_ob(sample_rgb_01, gt_img_01)
+                        psnr = psnr_ob(sample_rgb_01, gt_rgb_img_01)
+                        ssim = ssim_ob(sample_rgb_01, gt_rgb_img_01)
 
                         add_calc_text = f"\nPSNR: {np.round([psnr], decimals=3)}, SSIM: {np.round([ssim], decimals=3)}\n"
                         log_value_txt += add_calc_text
@@ -364,7 +370,7 @@ def main() -> None:
 
                     # additional image can be empty image or the GT image if exists
                     if gt_flag:
-                        additional_image = gt_img_01.squeeze()
+                        additional_image = gt_rgb_img_01.squeeze()
                     else:
                         additional_image = torch.zeros_like(sample_rgb_01, device=torch.device('cpu'))
 
@@ -397,11 +403,11 @@ def main() -> None:
                 # used for visualization
                 sample_depth_vis = utilso.min_max_norm_range(sample_depth_tmp, vmin=0, vmax=1, is_uint8=False)
                 sample_depth_vis_pmm = utilso.min_max_norm_range_percentile(sample_depth_tmp,
-                                                                            percent_low=0.01, percent_high=0.99)
+                                                                            percent_low=0.05, percent_high=0.95)
                 sample_depth_vis_pmm_color = utilso.depth_tensor_to_color_image(sample_depth_vis_pmm)
 
                 # saving seperated images
-                if args.save_sample:
+                if args.save_singles:
                     ref_im_pil = tvtf.to_pil_image(ref_img_01)
                     ref_im_pil.save(pjoin(save_singles_path, f'{orig_file_name}_ref.png'))
 
@@ -429,6 +435,15 @@ def main() -> None:
 
 
 if __name__ == '__main__':
+    parser = ArgumentParser()
+    # parser.add_argument("-c", "--config_file", default="./configs/osmosis_sample_config.yaml",
+    parser.add_argument("-c", "--config_file", default="./configs/osmosis_simulation_sample_config.yaml",
+                        help="Configurations file")
+    args = vars(parser.parse_args())
+    CONFIG_FILE = args["config_file"]
+
+    print(f"\nConfiguration file:\n{CONFIG_FILE}\n")
+
     main()
     print(f"\nFINISH!")
     sys.exit()

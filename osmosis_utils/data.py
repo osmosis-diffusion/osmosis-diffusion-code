@@ -72,24 +72,31 @@ class ImagesFolder_GT_results(Dataset):
 # %% ImageFolder Dataset with gt
 class ImagesFolder_GT(Dataset):
 
-    def __init__(self, root_dir, gt_dir, transform=None):
-        self.gt_dir = gt_dir
+    def __init__(self, root_dir, gt_rgb_dir, gt_depth_dir, transform=None):
+        self.gt_rgb_dir = gt_rgb_dir
+        self.gt_depth_dir = gt_depth_dir
         self.root_dir = root_dir
 
-        self.gt_list = natsorted(glob.glob(pjoin(gt_dir, "*.*")))
+        self.gt_rgb_list = natsorted(glob.glob(pjoin(gt_rgb_dir, "*.*")))
+        self.gt_depth_list = natsorted(glob.glob(pjoin(gt_depth_dir, "*.*")))
         self.images_list = natsorted(glob.glob(pjoin(root_dir, "*.*")))
         self.transform = transform
 
     def __len__(self):
-        return len(self.gt_list)
+        return len(self.gt_rgb_list)
 
     def __getitem__(self, idx):
         image_name = os.path.basename(self.images_list[idx])
         image = Image.open(self.images_list[idx])
-        gt_image = Image.open(self.gt_list[idx])
+        gt_rgb_image = Image.open(self.gt_rgb_list[idx])
+        gt_depth_image = Image.open(self.gt_depth_list[idx])
 
         if self.transform is not None:
-            gt_image = self.transform(gt_image)
             image = self.transform(image)
+            gt_rgb_image = self.transform(gt_rgb_image)
 
-        return [image, gt_image], image_name
+            # it is a single channel image (only depth), so preprocess is required
+            gt_depth_image = Image.merge("RGB", (gt_depth_image,gt_depth_image,gt_depth_image))
+            gt_depth_image = self.transform(gt_depth_image)
+
+        return [image, gt_rgb_image, gt_depth_image], image_name

@@ -60,7 +60,7 @@ class LinearOperator(ABC):
 
 @register_operator(name='noise')
 class DenoiseOperator(LinearOperator):
-    def __init__(self, device, batch_size=1):
+    def __init__(self, device, batch_size=1, **kargs):
         self.device = device
         self.batch_size = batch_size
 

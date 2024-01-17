@@ -3,7 +3,14 @@ save_dir: results
 
 degamma_input: False # use it for not linear haze image
 manual_seed: 0
-check_prior: False
+check_prior: True
+
+# for **check prior** option you need to set few things:
+# check_prior: True
+# conditioning: method: ps
+# conditioning: params: scale: number,number,number,0
+# measurement: operator: name: noise
+# degamma_input: False
 
 save_singles: True # save single reference image, restored RGB image and depth estimation image
 save_grids: True
@@ -84,7 +91,7 @@ diffusion:
 
 # task configurations
 conditioning:
-  method: osmosis # osmosis, ps - for checking the prior
+  method: ps # osmosis, ps - for checking the prior
   params:
     loss_function: norm # norm, mse
 
@@ -92,7 +99,7 @@ conditioning:
     weight_function: gamma,1.4,1.4,1 # function, value
 
     # when measurement operator noise (check_prior) is not underwater - set scale for depth to 0 (vR,vG,vB,vD=0)
-    scale: 7,7,7,0.9 # osmosis
+    scale: 10,10,10,0 # osmosis
     gradient_x_prev: True # if False - the gradient of the forward degradation is according x_0_pred
 
     gradient_clip: True,0.005
@@ -106,15 +113,15 @@ aux_loss:
 data:
   batch_size: 1
 
-  name: osmosis
-  root: .\data\underwater\low_res
+  name: check_prior
+  root: .\data\check_prior
   stop_after: -1
   ground_truth: False
 
 measurement:
   operator:
 
-    name: underwater_physical_revised # underwater_physical_revised, haze_physical, noise (for check prior)
+    name: noise # underwater_physical_revised, haze_physical, noise (for check prior)
 
     optimizer: sgd # GD, adam, sgd
 
@@ -138,8 +145,8 @@ measurement:
     phi_inf_learn_flag: True
 
   noise:
-    name: clean # clean - osmosis, gaussian - ps
-#    sigma: 0.001 # gaussian - ps
+    name: gaussian # clean - osmosis, gaussian - ps
+    sigma: 0.001 # gaussian - ps
 
 
 
