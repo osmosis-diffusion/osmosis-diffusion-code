@@ -5,17 +5,9 @@ degamma_input: False # use it for not linear haze image
 manual_seed: 0
 check_prior: False
 
-# for **osmosis (underwater)** option you need to set few things:
-# check_prior: False
-# conditioning: method: osmosis
-# measurement: operator: name: underwater_physical_revised
-# measurement: operator: name: clean
-# degamma_input: False
-
-
 save_singles: True # save single reference image, restored RGB image and depth estimation image
 save_grids: True
-text_on_results: True
+text_on_results: False
 
 # record the sampling process
 record_process: True
@@ -115,12 +107,12 @@ data:
   batch_size: 1
 
   name: simulation
-  root: .\data\simulation_1\input
-  gt_rgb: .\data\simulation_1\gt_rgb
-  gt_depth: .\data\simulation_1\gt_depth
-#  root: .\data\simulation_2
-#  gt_rgb: .\data\simulation_2\gt_rgb
-#  gt_depth: .\data\simulation_2\gt_depth
+#  root: .\data\simulation_1\input
+#  gt_rgb: .\data\simulation_1\gt_rgb
+#  gt_depth: .\data\simulation_1\gt_depth
+  root: .\data\simulation_2\input
+  gt_rgb: .\data\simulation_2\gt_rgb
+  gt_depth: .\data\simulation_2\gt_depth
   stop_after: -1
   ground_truth: True
 

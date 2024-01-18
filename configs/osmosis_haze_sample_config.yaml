@@ -1,20 +1,13 @@
 # saving directory
 save_dir: results
 
-degamma_input: True # use it for not linear haze image
+degamma_input: True # use it for not linear haze images
 manual_seed: 0
 check_prior: False
 
-# for **osmosis (haze)** option you need to set few things:
-# check_prior: False
-# conditioning: method: osmosis
-# measurement: operator: name: haze_physical
-# measurement: operator: name: clean
-# degamma_input: True
-
 save_singles: True # save single reference image, restored RGB image and depth estimation image
 save_grids: True
-text_on_results: True
+text_on_results: False
 
 # record the sampling process
 record_process: True

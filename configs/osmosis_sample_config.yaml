@@ -7,7 +7,7 @@ check_prior: False
 
 save_singles: True # save single reference image, restored RGB image and depth estimation image
 save_grids: True
-text_on_results: True
+text_on_results: False
 
 # record the sampling process
 record_process: True
@@ -65,7 +65,7 @@ unet_model:
 
   # pretrained model
   model_path: osmosis_outdoor.pt
-  pretrain_model: osmosis  # osmosis, imagenet
+  pretrain_model: osmosis
 
 # diffusion configurations
 diffusion:

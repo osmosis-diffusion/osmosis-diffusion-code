@@ -88,11 +88,14 @@ def main() -> None:
     if args.save_singles:
         save_singles_path = pjoin(out_path, f"single_images")
         os.makedirs(save_singles_path)
-
+    else:
+        save_singles_path = None
     # directory for the results a grid
     if args.save_grids:
         save_grids_path = pjoin(out_path, f"grid_results")
         os.makedirs(save_grids_path)
+    else:
+        save_grids_path = None
 
     # logger
     logger.configure(dir=out_path)
