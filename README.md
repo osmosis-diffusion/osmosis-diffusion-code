@@ -58,6 +58,7 @@ Description...
 
 <br />
 
+
 #### Underwater images - Simulated data with Ground Truth
 - [Simulation #1](https://drive.google.com/drive/folders/1E4cXHtpNWX3wHrkmiVDF_XUpPnWMOe-0?usp=sharing)
 
@@ -65,34 +66,26 @@ Description...
 
 Description...
 
+<br />
 
 #### Hazed images
 [link](https://drive.google.com/drive/folders/18Xpy8MdsIucNIRhTTKD_Q3isbC79TW89?usp=sharing)
 Description...
 
+<br />
 
 ### 3) Set environment
 ### [Option 1] Local environment setting
 
-We use the external codes for motion-blurring and non-linear deblurring.
-
-```
-git clone https://github.com/VinAIResearch/blur-kernel-space-exploring bkse
-
-git clone https://github.com/LeviBorodenko/motionblur motionblur
-```
-
 Install dependencies
 
 ```
-conda create -n DPS python=3.8
+conda create -n osmosis python=3.8
 
-conda activate DPS
-
-pip install -r requirements.txt
-
-pip install torch==1.11.0+cu113 torchvision==0.12.0+cu113 torchaudio==0.11.0 --extra-index-url https://download.pytorch.org/whl/cu113
+conda activate osmosis
 ```
+
+See dependencies at environment.yml file
 
 <br />
 
@@ -116,35 +109,43 @@ docker run -it --rm --gpus=all dps-docker
 
 There are 5 possible configurations:
 
-#### Underwater Image Restoration and Depth Estimation - real data
+#### a) Underwater Image Restoration and Depth Estimation - real data
 Description...
 
-
+```
 python osmosis_sampling.py --config_file ./configs/osmosis_sample_config.yaml
-'''
+```
 
-#### Underwater Image Restoration and Depth Estimation - simulated data
+<br />
+
+#### b) Underwater Image Restoration and Depth Estimation - simulated data
 Description...
 
 ```
 python osmosis_sampling.py --config_file ./configs/osmosis_simulation_sample_config.yaml
 ```
 
-#### Hazed Image Restoration and Depth Estimation
+<br />
+
+#### c) Hazed Image Restoration and Depth Estimation
 Description...
 
 ```
 python osmosis_sampling.py --config_file ./configs/osmosis_haze_sample_config.yaml
 ```
 
-#### Check Prior
+<br />
+
+#### d) Check Prior
 Description...
 
 ```
 python osmosis_sampling.py --config_file ./configs/check_prior_sample_config.yaml
 ```
 
-#### Sample from RGBD Prior - __Without__ guidance
+<br />
+
+#### e) Sample from RGBD Prior - __Without__ guidance
 Description...
 
 ```
@@ -153,7 +154,7 @@ python RGBD_prior_sampling.py --config_file ./configs/RGBD_sample_config.yaml
 
 <br />
 
-### Structure of task configurations
+### Structure of configurations file
 You need to write your data directory at data.root. Default is ./data/samples which contains three sample images from FFHQ validation set.
 
 ```
