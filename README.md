@@ -19,9 +19,6 @@ In this work,
 
 - nvidia-docker (if you use GPU in docker container)
 
-
-
-
 <br />
 
 ## Getting started 
@@ -39,20 +36,23 @@ cd diffusion-posterior-sampling
 ### 2) Download pretrained checkpoint and data
 
 ### Checkpoint
-From the [link](https://drive.google.com/file/d/13o2roYPI-2wDOh8LvPHGQIrqRommSuJT/view?usp=drive_link), download the checkpoint "osmosis_outdoor.pt" and paste it to ./models/
+
+Create a new dirctory "models".
+
+From the [link](https://drive.google.com/file/d/13o2roYPI-2wDOh8LvPHGQIrqRommSuJT/view?usp=drive_link), download the checkpoint "osmosis_outdoor.pt" into models directory.
 
 <br />
 
 ### Datasets
 
 #### Underwater images - real data
-__Low__ Resolusion set - [link](https://drive.google.com/drive/folders/1g6WAF6RAQlen84bMFNIMq-U-3XJ7oN65?usp=sharing) - 256x256
 
-Description...
+- __Low__ Resolusion set - [link](https://drive.google.com/drive/folders/1g6WAF6RAQlen84bMFNIMq-U-3XJ7oN65?usp=sharing) - 256x256
+- __High__ Resolusion set -[link](https://drive.google.com/drive/folders/12c8MDPEHgOSSMLZ0l-eFCs8iIQoOPuVN?usp=sharing)
 
-__High__ Resolusion set -[link](https://drive.google.com/drive/folders/12c8MDPEHgOSSMLZ0l-eFCs8iIQoOPuVN?usp=sharing)
-
-Description...
+Underwater images are taken from 3 deataset: [SQUID](https://csms.haifa.ac.il/profiles/tTreibitz/datasets/ambient_forwardlooking/index.html), 
+[SeaThru](https://csms.haifa.ac.il/profiles/tTreibitz/datasets/sea_thru/index.html) 
+and [SeaThru-Nerf](https://sea-thru-nerf.github.io/).
 
 <br />
 
