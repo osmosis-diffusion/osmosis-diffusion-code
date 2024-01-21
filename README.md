@@ -1,8 +1,12 @@
-[Paper](link) , [Project Page](https://osmosis-diffusion.github.io/)
+# Osmosis: RGBD Diffusion Prior for Underwater Image Restoration
 
-# Osmosis - RGBD Diffusion Prior for Underwater Image Restoration
+### [Paper](link) , [Project Page](https://osmosis-diffusion.github.io/)
 
-This repository contains official PyTorch implementation for __Osmosis - RGBD Diffusion Prior for Underwater Image Restoration__.
+> Osmosis: RGBD Diffusion Prior for Underwater Image Restoration
+>
+> [Opher Bar Nathan](mailto:barnathanopher@gmail.com) | Deborah Levy | [Tali Treibitz](https://www.viseaon.haifa.ac.il/) | [Dan Rosenbaum ](https://danrsm.github.io/)
+
+This repository contains official PyTorch implementation for __Osmosis: RGBD Diffusion Prior for Underwater Image Restoration__.
 
 ![intro](figures/teaser2.png)
 
@@ -49,6 +53,7 @@ Create a new dirctory "data".
 
 Download the dataset into data directory.
 
+<br />
 
 #### Underwater images - real data - [link](https://drive.google.com/drive/folders/1mlojrmSsSF07y5jH3m1P7SBlY5TF0C7A?usp=sharing)
 
@@ -66,7 +71,6 @@ and [SeaThru-Nerf](https://sea-thru-nerf.github.io/).
 
 <br />
 
-
 #### Underwater images - Simulated data with Ground Truth
 - [Simulation #1](https://drive.google.com/drive/folders/1E4cXHtpNWX3wHrkmiVDF_XUpPnWMOe-0?usp=sharing)
 
@@ -81,6 +85,14 @@ Description...
 Description...
 
 <br />
+
+
+#### Using your own data
+
+Description...
+
+<br />
+
 
 ### 3) Set environment
 ### [Option 1] Local environment setting
