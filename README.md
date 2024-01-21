@@ -113,7 +113,7 @@ From the [link](https://drive.google.com/file/d/13o2roYPI-2wDOh8LvPHGQIrqRommSuJ
 
 Create a new dirctory "data".
 
-Download the relevant [dataset](##Datasets) into data directory.
+Download the relevant [dataset](## Datasets) into data directory.
 
 <br />
 
