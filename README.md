@@ -161,44 +161,50 @@ docker run -it --rm --gpus=all dps-docker
 
 There are 5 possible configurations:
 
+
 #### a) Underwater Image Restoration and Depth Estimation - real data
-Description...
+
+Relevant for real underwater images.
 
 ```
 python osmosis_sampling.py --config_file ./configs/osmosis_sample_config.yaml
 ```
 
-<br />
 
 #### b) Underwater Image Restoration and Depth Estimation - simulated data
-Description...
+
+Relevant for simulated underwater images.
 
 ```
 python osmosis_sampling.py --config_file ./configs/osmosis_simulation_sample_config.yaml
 ```
 
-<br />
 
 #### c) Hazed Image Restoration and Depth Estimation
-Description...
+
+Relevant for images in haze environment.
 
 ```
 python osmosis_sampling.py --config_file ./configs/osmosis_haze_sample_config.yaml
 ```
 
-<br />
 
 #### d) Check Prior
-Description...
+
+Here, guidance is exclusively based on the colored (RGB) image, with the objective of making the output RGB image closely resemble the input image. 
+
+The depth map is subsequently estimated using prior information.
 
 ```
 python osmosis_sampling.py --config_file ./configs/check_prior_sample_config.yaml
 ```
 
-<br />
 
 #### e) Sample from RGBD Prior - __Without__ guidance
-Description...
+
+In this scenario, there is no guidance provided for the sampling process, resulting in the production of an RGB image and its corresponding depth map. 
+
+The absence of guidance implies no constraints on achieving a visually coherent image.
 
 ```
 python RGBD_prior_sampling.py --config_file ./configs/RGBD_sample_config.yaml
@@ -207,7 +213,8 @@ python RGBD_prior_sampling.py --config_file ./configs/RGBD_sample_config.yaml
 <br />
 
 ### Structure of configurations file
-You need to write your data directory at data.root. Default is ./data/samples which contains three sample images from FFHQ validation set.
+
+Each inference 
 
 ```
 conditioning:
