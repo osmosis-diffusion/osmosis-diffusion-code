@@ -34,7 +34,7 @@ Furthermore, the algorithm exhibits versatility for additional tasks such as deh
 
 This folder contains two similar datasets.
 - __Low__ Resolusion set - [link](https://drive.google.com/drive/folders/1g6WAF6RAQlen84bMFNIMq-U-3XJ7oN65?usp=sharing) - 256x256
-- __High__ Resolusion set -[link](https://drive.google.com/drive/folders/12c8MDPEHgOSSMLZ0l-eFCs8iIQoOPuVN?usp=sharing)
+- __High__ Resolusion set - [link](https://drive.google.com/drive/folders/12c8MDPEHgOSSMLZ0l-eFCs8iIQoOPuVN?usp=sharing)
 
 Both contain the same images, but __Low__ Resolusion set is cropped and resized vopy of the __High__ Resolusion set images.
 
@@ -113,7 +113,7 @@ From the [link](https://drive.google.com/file/d/13o2roYPI-2wDOh8LvPHGQIrqRommSuJ
 
 Create a new dirctory "data".
 
-Download the relevant dataset into data directory.
+Download the relevant [dataset](##Datasets) into data directory.
 
 <br />
 
