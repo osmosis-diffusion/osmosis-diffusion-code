@@ -12,16 +12,10 @@ This repository contains official PyTorch implementation for __Osmosis: RGBD Dif
 
 This code is based on [guided_diffusion](https://github.com/openai/guided-diffusion), [DPS](https://github.com/DPS2022/diffusion-posterior-sampling) and [GDP](https://github.com/Fayeben/GenerativeDiffusionPrior)
 
-## Abstract
-In this work, 
 
 ## Prerequisites
 
-- python 3.8
-
-- pytorch 1.13.1
-
-- nvidia-docker (if you use GPU in docker container)
+See the environment file: [link](environment.yml)
 
 <br />
 
