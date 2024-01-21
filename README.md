@@ -6,7 +6,7 @@
 >
 > [Opher Bar Nathan](mailto:barnathanopher@gmail.com) | Deborah Levy | [Tali Treibitz](https://www.viseaon.haifa.ac.il/) | [Dan Rosenbaum ](https://danrsm.github.io/)
 
-This repository contains official PyTorch implementation for __Osmosis: RGBD Diffusion Prior for Underwater Image Restoration__.
+This repository contains official PyTorch implementation for **Osmosis: RGBD Diffusion Prior for Underwater Image Restoration**.
 
 ![intro](figures/teaser2.png)
 
@@ -33,10 +33,10 @@ Furthermore, the algorithm exhibits versatility for additional tasks such as deh
 ### Underwater images - real data - [link](https://drive.google.com/drive/folders/1mlojrmSsSF07y5jH3m1P7SBlY5TF0C7A?usp=sharing)
 
 This folder contains two similar datasets.
-- __Low__ Resolusion set - [link](https://drive.google.com/drive/folders/1g6WAF6RAQlen84bMFNIMq-U-3XJ7oN65?usp=sharing) - 256x256
-- __High__ Resolusion set - [link](https://drive.google.com/drive/folders/12c8MDPEHgOSSMLZ0l-eFCs8iIQoOPuVN?usp=sharing)
+- **Low** Resolusion set - [link](https://drive.google.com/drive/folders/1g6WAF6RAQlen84bMFNIMq-U-3XJ7oN65?usp=sharing) - 256x256
+- **High** Resolusion set - [link](https://drive.google.com/drive/folders/12c8MDPEHgOSSMLZ0l-eFCs8iIQoOPuVN?usp=sharing)
 
-Both contain the same images, but __Low__ Resolusion set is cropped and resized vopy of the __High__ Resolusion set images.
+Both contain the same images, but **Low** Resolusion set is cropped and resized vopy of the **High** Resolusion set images.
 
 Our methos gets as input any resolution but it is resized according the small image side to 256 pixels and then being cropped.
 
@@ -122,8 +122,8 @@ Download the relevant [dataset](#datasets) into data directory.
 
 ### 3) Set environment
 
-<!--
-### [Option 1] Local environment setting
+
+###  Local environment setting
 
 Install dependencies
 
@@ -135,8 +135,7 @@ conda activate osmosis
 
 See dependencies at environment.yml file
 
-
-
+<!--
 ### [Option 2] Build Docker image
 
 Install docker engine, GPU driver and proper cuda before running the following commands.
