@@ -55,7 +55,7 @@ Download the dataset into data directory.
 
 <br />
 
-#### Underwater images - real data - [link](https://drive.google.com/drive/folders/1mlojrmSsSF07y5jH3m1P7SBlY5TF0C7A?usp=sharing)
+- #### Underwater images - real data - [link](https://drive.google.com/drive/folders/1mlojrmSsSF07y5jH3m1P7SBlY5TF0C7A?usp=sharing)
 
 This folder contains two similar datasets.
 - __Low__ Resolusion set - [link](https://drive.google.com/drive/folders/1g6WAF6RAQlen84bMFNIMq-U-3XJ7oN65?usp=sharing) - 256x256
@@ -71,7 +71,7 @@ and [SeaThru-Nerf](https://sea-thru-nerf.github.io/).
 
 <br />
 
-#### Underwater images - Simulated data with Ground Truth
+- #### Underwater images - Simulated data with Ground Truth
 - [Simulation #1](https://drive.google.com/drive/folders/1E4cXHtpNWX3wHrkmiVDF_XUpPnWMOe-0?usp=sharing)
 
 -  [Simulation #2](https://drive.google.com/drive/folders/1_096PIqXR0w4j8ASyZsEPHs1WZj3AscN?usp=sharing)
