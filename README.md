@@ -76,7 +76,7 @@ We present preliminary results of this method applied to the dehazing task.
 
 <br />
 
-#### Using your own data
+### Using your own data
 
 In case you would like to try this method on your own data:
 - Place all images in the same folder.
@@ -113,7 +113,7 @@ From the [link](https://drive.google.com/file/d/13o2roYPI-2wDOh8LvPHGQIrqRommSuJ
 
 Create a new dirctory "data".
 
-Download the dataset into data directory.
+Download the relevant dataset into data directory.
 
 <br />
 
@@ -121,6 +121,8 @@ Download the dataset into data directory.
 
 
 ### 3) Set environment
+
+<!--
 ### [Option 1] Local environment setting
 
 Install dependencies
@@ -133,7 +135,7 @@ conda activate osmosis
 
 See dependencies at environment.yml file
 
-<br />
+
 
 ### [Option 2] Build Docker image
 
@@ -149,7 +151,8 @@ docker build -t dps-docker:latest .
 docker run -it --rm --gpus=all dps-docker
 ```
 
-<br />
+-->
+
 
 ### 4) Inference
 
