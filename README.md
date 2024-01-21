@@ -208,6 +208,7 @@ python RGBD_prior_sampling.py --config_file ./configs/RGBD_sample_config.yaml
 
 <br />
 
+<!--
 ### Structure of configurations file
 
 Each inference 
@@ -231,6 +232,7 @@ noise:
     sigma:  # if you use name: gaussian, set this.
     (rate:) # if you use name: poisson, set this.
 ```
+-->
 
 ## Citation
 If you find our work interesting, please consider citing
