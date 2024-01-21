@@ -4,9 +4,7 @@
 
 This repository contains official PyTorch implementation for __Osmosis - RGBD Diffusion Prior for Underwater Image Restoration__.
 
-'''
-TEASER IMAGE
-'''
+![intro](figures/teaser2.png)
 
 This code is based on [guided_diffusion](https://github.com/openai/guided-diffusion), [DPS](https://github.com/DPS2022/diffusion-posterior-sampling) and [GDP](https://github.com/Fayeben/GenerativeDiffusionPrior)
 
