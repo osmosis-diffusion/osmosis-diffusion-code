@@ -45,10 +45,20 @@ From the [link](https://drive.google.com/file/d/13o2roYPI-2wDOh8LvPHGQIrqRommSuJ
 
 ### Datasets
 
-#### Underwater images - real data
+Create a new dirctory "data".
 
+Download the dataset into data directory.
+
+
+#### Underwater images - real data - [link](https://drive.google.com/drive/folders/1mlojrmSsSF07y5jH3m1P7SBlY5TF0C7A?usp=sharing)
+
+This folder contains two similar datasets.
 - __Low__ Resolusion set - [link](https://drive.google.com/drive/folders/1g6WAF6RAQlen84bMFNIMq-U-3XJ7oN65?usp=sharing) - 256x256
 - __High__ Resolusion set -[link](https://drive.google.com/drive/folders/12c8MDPEHgOSSMLZ0l-eFCs8iIQoOPuVN?usp=sharing)
+
+Both contain the same images, but __Low__ Resolusion set is cropped and resized vopy of the __High__ Resolusion set images.
+
+Our methos gets as input any resolution but it is resized according the small image side to 256 pixels and then being cropped.
 
 Underwater images are taken from 3 deataset: [SQUID](https://csms.haifa.ac.il/profiles/tTreibitz/datasets/ambient_forwardlooking/index.html), 
 [SeaThru](https://csms.haifa.ac.il/profiles/tTreibitz/datasets/sea_thru/index.html) 
