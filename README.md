@@ -25,6 +25,70 @@ In this work,
 
 <br />
 
+
+## Datasets
+
+The method is specifically designed for underwater scenes. 
+
+Consequently, underwater images are supplied, and simulated data was also examined for quantitative analysis. 
+
+Furthermore, the algorithm exhibits versatility for additional tasks such as dehazing, hence, a set of images with haze is included.
+
+<br />
+
+### Underwater images - real data - [link](https://drive.google.com/drive/folders/1mlojrmSsSF07y5jH3m1P7SBlY5TF0C7A?usp=sharing)
+
+This folder contains two similar datasets.
+- __Low__ Resolusion set - [link](https://drive.google.com/drive/folders/1g6WAF6RAQlen84bMFNIMq-U-3XJ7oN65?usp=sharing) - 256x256
+- __High__ Resolusion set -[link](https://drive.google.com/drive/folders/12c8MDPEHgOSSMLZ0l-eFCs8iIQoOPuVN?usp=sharing)
+
+Both contain the same images, but __Low__ Resolusion set is cropped and resized vopy of the __High__ Resolusion set images.
+
+Our methos gets as input any resolution but it is resized according the small image side to 256 pixels and then being cropped.
+
+Underwater images are taken from 3 deataset: [SQUID](https://csms.haifa.ac.il/profiles/tTreibitz/datasets/ambient_forwardlooking/index.html), 
+[SeaThru](https://csms.haifa.ac.il/profiles/tTreibitz/datasets/sea_thru/index.html) 
+and [SeaThru-Nerf](https://sea-thru-nerf.github.io/).
+
+The images are raw and undergo a white balance process.
+
+<br />
+
+### Underwater images - Simulated data with Ground Truth
+
+As part of this work an underwater scenes were simulated for quantitative comparisons.
+
+100 Images were taken from the indoor dataset: [NYUv2](https://cs.nyu.edu/~silberman/datasets/nyu_depth_v2.html),
+which includes images and corresponded depthmap.
+
+There are two datasets.
+
+The simulations parameters are detailed in the paper and in the supplementary data.
+
+- [Simulation #1](https://drive.google.com/drive/folders/1E4cXHtpNWX3wHrkmiVDF_XUpPnWMOe-0?usp=sharing)
+- [Simulation #2](https://drive.google.com/drive/folders/1_096PIqXR0w4j8ASyZsEPHs1WZj3AscN?usp=sharing)
+
+
+Each simulation includes 3 folders: 
+1. input - the simulated images
+2. gt_rgb - Ground Truth color images
+3. gt_rgb - Ground Truth depth maps
+
+<br />
+
+### Hazed images - [link](https://drive.google.com/drive/folders/18Xpy8MdsIucNIRhTTKD_Q3isbC79TW89?usp=sharing)
+
+In the Supplementary data We present preliminary results of this method applied to the dehazing task.
+
+<br />
+
+
+#### Using your own data
+
+Description...
+
+<br />
+
 ## Getting started 
 
 ### 1) Clone the repository
@@ -55,43 +119,7 @@ Download the dataset into data directory.
 
 <br />
 
-- #### Underwater images - real data - [link](https://drive.google.com/drive/folders/1mlojrmSsSF07y5jH3m1P7SBlY5TF0C7A?usp=sharing)
 
-This folder contains two similar datasets.
-- __Low__ Resolusion set - [link](https://drive.google.com/drive/folders/1g6WAF6RAQlen84bMFNIMq-U-3XJ7oN65?usp=sharing) - 256x256
-- __High__ Resolusion set -[link](https://drive.google.com/drive/folders/12c8MDPEHgOSSMLZ0l-eFCs8iIQoOPuVN?usp=sharing)
-
-Both contain the same images, but __Low__ Resolusion set is cropped and resized vopy of the __High__ Resolusion set images.
-
-Our methos gets as input any resolution but it is resized according the small image side to 256 pixels and then being cropped.
-
-Underwater images are taken from 3 deataset: [SQUID](https://csms.haifa.ac.il/profiles/tTreibitz/datasets/ambient_forwardlooking/index.html), 
-[SeaThru](https://csms.haifa.ac.il/profiles/tTreibitz/datasets/sea_thru/index.html) 
-and [SeaThru-Nerf](https://sea-thru-nerf.github.io/).
-
-<br />
-
-- #### Underwater images - Simulated data with Ground Truth
-- [Simulation #1](https://drive.google.com/drive/folders/1E4cXHtpNWX3wHrkmiVDF_XUpPnWMOe-0?usp=sharing)
-
--  [Simulation #2](https://drive.google.com/drive/folders/1_096PIqXR0w4j8ASyZsEPHs1WZj3AscN?usp=sharing)
-
-Description...
-
-<br />
-
-#### Hazed images
-[link](https://drive.google.com/drive/folders/18Xpy8MdsIucNIRhTTKD_Q3isbC79TW89?usp=sharing)
-Description...
-
-<br />
-
-
-#### Using your own data
-
-Description...
-
-<br />
 
 
 ### 3) Set environment
