@@ -300,38 +300,35 @@ aux_loss:
 data:
   name: osmosis                      # dataset name
   root: .\data\underwater\high_res   # path of the dataset
-  ground_truth: False                # if the dataset includes ground truth
+  ground_truth: False                # if the dataset includes ground truth - True, else - False
+  gt_rgb: .\data\simulation_1\gt_rgb        # dataset ground truth paths - comment when no GT data
+  gt_depth: .\data\simulation_1\gt_depth    # dataset ground truth paths - comment when no GT data
+
 
 measurement:
   operator:
 
     name: underwater_physical_revised # underwater_physical_revised, haze_physical, noise (for check prior)
-    optimizer: sgd                    # GD, adam, sgd
+    optimizer: sgd                    # water parameters optimizer - options are adam, sgd
 
     depth_type: gamma                 # original- [0,1], gamma=((x+value[0])*value[1])^value[2]
     value: 1.4,1.4,1
 
-    # underwater_physical
-    phi_a: 1.1,0.95,0.95
-    phi_a_eta: 1e-5
-    phi_a_learn_flag: True
+    phi_a: 1.1,0.95,0.95              # initalized values
+    phi_a_eta: 1e-5                   # step size for the optimization
+    phi_a_learn_flag: True            # optimization flaf - if False, there is no optimization for this parameter  
 
-    # underwater_physical
-    phi_b: 0.95, 0.8, 0.8
-    phi_b_eta: 1e-5
-    phi_b_learn_flag: True
+    phi_b: 0.95, 0.8, 0.8             # initalized values
+    phi_b_eta: 1e-5                   # step size for the optimization
+    phi_b_learn_flag: True            # optimization flaf - if False, there is no optimization for this parameter  
 
-    # underwater_physical, haze_physical
-    phi_inf: 0.14, 0.29, 0.49
-    phi_inf_eta: 1e-5
-    phi_inf_learn_flag: True
+    phi_inf: 0.14, 0.29, 0.49         # initalized values
+    phi_inf_eta: 1e-5                 # step size for the optimization
+    phi_inf_learn_flag: True          # optimization flaf - if False, there is no optimization for this parameter  
 
-  noise:
-    name: clean # clean - osmosis, gaussian - ps
-#    sigma: 0.001 # gaussian - ps
-
-
-
+  noise:                              # added noise
+    name: clean                       # clean - osmosis, gaussian - ps
+    sigma: 0.001                      # comment in case of "clean" uncomment in case of "gaussian"
 
 ```
 
