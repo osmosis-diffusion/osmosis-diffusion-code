@@ -194,8 +194,8 @@ Relevant for real underwater images.
 python osmosis_sampling.py --config_file ./configs/osmosis_sample_config.yaml
 ```
 
-איק\\\Tיק'קר'קר
-ק'רדג
+On the left is an underwater image, serving as the input to our method. In the middle is the restored RGB image, and on the right is the depth estimation, where blue represents close distances and yellow farther distances.
+
 <img src='figures/MTN_1099_g0_grid.png' width='600'>
 
 <br />
@@ -207,6 +207,11 @@ Relevant for simulated underwater images.
 ```
 python osmosis_sampling.py --config_file ./configs/osmosis_simulation_sample_config.yaml
 ```
+
+The first row is the same as above.
+On the left is a simulated underwater image, serving as the input to our method. In the middle is the restored RGB image, and on the right is the depth estimation, where blue represents close distances and yellow farther distances.
+In the second row, there is the ground truth RGB image and the depth map.
+
 <img src='figures/226_Image_.bmp_g0_grid.png' width='600'>
 
 <br />
@@ -218,6 +223,9 @@ Relevant for images in haze environment.
 ```
 python osmosis_sampling.py --config_file ./configs/osmosis_haze_sample_config.yaml
 ```
+
+On the left is a simulated underwater image, serving as the input to our method. In the middle is the restored RGB image, and on the right is the depth estimation, where black represents close distances and white farther distances.
+
 <img src='figures/Picture3.png' width='600'>
 
 <br />
@@ -231,6 +239,9 @@ The depth map is subsequently estimated using prior information.
 ```
 python osmosis_sampling.py --config_file ./configs/check_prior_sample_config.yaml
 ```
+
+On the left is the input image. In the middle is the restored RGB image, designed to closely resemble the input image. On the right is the depth estimation, with black indicating close distances and white representing farther distances.
+
 <img src='figures/Picture2.png' width='600'>
 
 <br />
@@ -244,6 +255,9 @@ The absence of guidance implies no constraints on achieving a visually coherent 
 ```
 python RGBD_prior_sampling.py --config_file ./configs/RGBD_sample_config.yaml
 ```
+
+Each pair of images (RGB image and depth map) is generated from the prior without any guidance on the sampling process. Here, black indicates close distances, and white represents farther distances.
+
 <img src='figures/Picture1.png' width='600'>
 
 <br />
