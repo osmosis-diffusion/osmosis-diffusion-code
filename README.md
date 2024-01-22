@@ -94,10 +94,10 @@ We present preliminary results of applying this method to the dehazing task, the
 
 In case you would like to try this method on your own data:
 - Place all images in the same folder.
-- In the configurations file, modify the 'data: root: <path>' to the folder path.
-- Specify the name in the 'data: name: <dataset_name>' field; the results will be saved into a folder with the same name.
-- If there is ground truth data, indicate it in the 'data: gt_rgb: <path>' and 'data: gt_depth: <path>' fields. Change the flag 'data: ground_truth: True' (similar to the configurations in 'osmosis_simulation_sample_config.yaml').
-- If your data is not simulated or is not include linear images, set the flag 'degamma_input: True', as it often produces improved results.
+- In the configurations file, modify the field ``` data: root: <path> ``` to the folder path.
+- Specify the name in the ``` data: name: <dataset_name> ``` field; the results will be saved into a folder with the same name.
+- If there is ground truth data, indicate its path in the ``` data: gt_rgb: <path> ``` and ``` data: gt_depth: <path> ``` fields. Change the flag ``` data: ground_truth: True ``` (similar to the configurations in ```osmosis_simulation_sample_config.yaml```).
+- If your data is not simulated or is not include linear images, set the flag ``` degamma_input: True ```, as it often produces improved results.
 
 <br />
 
