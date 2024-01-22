@@ -51,15 +51,15 @@ This folder contains two similar datasets.
 - **Low** Resolusion set - [link](https://drive.google.com/drive/folders/1g6WAF6RAQlen84bMFNIMq-U-3XJ7oN65?usp=sharing) - 256x256
 - **High** Resolusion set - [link](https://drive.google.com/drive/folders/12c8MDPEHgOSSMLZ0l-eFCs8iIQoOPuVN?usp=sharing)
 
-Both contain the same images, but **Low** Resolusion set is cropped and resized vopy of the **High** Resolusion set images.
+Both datasets contain identical images, with the *Low-Resolution Set* serving as a cropped and resized version of the *High-Resolution Set* images.
 
-Our methos gets as input any resolution but it is resized according the small image side to 256 pixels and then being cropped.
+Our method accepts input images of any resolution, but it standardizes the resolution by resizing them to 256 pixels on the smaller side and subsequently center cropping them.
 
-Underwater images are taken from 3 deataset: [SQUID](https://csms.haifa.ac.il/profiles/tTreibitz/datasets/ambient_forwardlooking/index.html), 
+The underwater images are sourced from three datasets: [SQUID](https://csms.haifa.ac.il/profiles/tTreibitz/datasets/ambient_forwardlooking/index.html), 
 [SeaThru](https://csms.haifa.ac.il/profiles/tTreibitz/datasets/sea_thru/index.html) 
 and [SeaThru-Nerf](https://sea-thru-nerf.github.io/).
 
-The images are raw and undergo a white balance process.
+The images are linear (were not undergo any non-linear processing) and undergo a white balance process.
 
 <br />
 
