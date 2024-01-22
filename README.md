@@ -153,7 +153,7 @@ conda create -n osmosis python=3.8
 conda activate osmosis
 ```
 
-See dependencies at environment.yml file
+See dependencies at environment.yml file - [link](environment.yml)
 
 <!--
 ### [Option 2] Build Docker image
