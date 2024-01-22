@@ -194,6 +194,8 @@ Relevant for real underwater images.
 python osmosis_sampling.py --config_file ./configs/osmosis_sample_config.yaml
 ```
 
+![example1](figures/MTN_1099_g0_grid.png)
+
 
 #### b) Underwater Image Restoration and Depth Estimation - simulated data
 
