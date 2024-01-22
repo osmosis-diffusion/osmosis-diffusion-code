@@ -10,14 +10,18 @@ This repository contains official PyTorch implementation for **Osmosis: RGBD Dif
 
 ![intro](figures/teaser2.png)
 
-This code is based on [guided_diffusion](https://github.com/openai/guided-diffusion), [DPS](https://github.com/DPS2022/diffusion-posterior-sampling) and [GDP](https://github.com/Fayeben/GenerativeDiffusionPrior)
+This code is based on [guided-diffusion](https://github.com/openai/guided-diffusion), [DPS](https://github.com/DPS2022/diffusion-posterior-sampling) and [GDP](https://github.com/Fayeben/GenerativeDiffusionPrior)
 
 
-## Prerequisites
+## RGBD Prior
 
-See the environment file: [link](environment.yml)
+As part of this work we train an unconditional DDPM based on [improved-diffusion](https://github.com/openai/guided-diffusion) and [guided-diffusion](https://github.com/openai/guided-diffusion).
 
-<br />
+We change the model to suit RGBD data (instead of RGB) by changing the UNet input layer to get 4 channels and output layers to produce 8 channels.
+
+We train the new prior using 4 outdoor RGBD dataset: [DIODE](https://diode-dataset.org/) (only outdoor scenes), [HRWSI](https://github.com/KexianHust/Structure-Guided-Ranking-Loss?tab=readme-ov-file), [KITTI](https://www.cvlibs.net/datasets/kitti/) and [ReDWeb-S](https://github.com/nnizhang/SMAC).
+
+You can download the trained RGBD prior from [link](https://drive.google.com/file/d/13o2roYPI-2wDOh8LvPHGQIrqRommSuJT/view?usp=drive_link), named "osmosis_outdoor.pt".
 
 
 ## Datasets
@@ -27,6 +31,8 @@ The method is specifically designed for underwater scenes.
 Consequently, underwater images are supplied, and simulated data was also examined for quantitative analysis. 
 
 Furthermore, the algorithm exhibits versatility for additional tasks such as dehazing, hence, a set of images with haze is included.
+
+
 
 <br />
 
@@ -83,6 +89,12 @@ In case you would like to try this method on your own data:
 - Specify the name in the 'data: name: <dataset_name>' field; the results will be saved into a folder with the same name.
 - If there is ground truth data, indicate it in the 'data: gt_rgb: <path>' and 'data: gt_depth: <path>' fields. Change the flag 'data: ground_truth: True' (similar to the configurations in 'osmosis_simulation_sample_config.yaml').
 - If your data is not simulated or is not include linear images, set the flag 'degamma_input: True', as it often produces improved results.
+
+<br />
+
+## Prerequisites
+
+See the environment file: [link](environment.yml)
 
 <br />
 
