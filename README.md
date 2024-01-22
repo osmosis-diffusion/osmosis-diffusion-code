@@ -105,6 +105,7 @@ In case you would like to try this method on your own data:
 
 See the environment file: [link](environment.yml)
 
+
 <br />
 
 ## Getting started 
@@ -135,10 +136,8 @@ Create a new dirctory "data".
 
 Download the relevant [dataset](#datasets) into data directory.
 
+
 <br />
-
-
-
 
 ### 3) Set environment
 
@@ -172,6 +171,8 @@ docker run -it --rm --gpus=all dps-docker
 
 -->
 
+
+<br />
 
 ### 4) Inference
 
