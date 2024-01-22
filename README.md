@@ -176,6 +176,13 @@ docker run -it --rm --gpus=all dps-docker
 
 ### 4) Inference
 
+The configuration file structure is thoroughly outlined in this [link](#structure-of-configurations-file),
+enabling users to modify configurations and fine-tune parameters for experimental purposes.
+
+By default, results are saved in the directory ```./results/<task name>/<dataset name>/<date>/<run#>```.
+
+Additionally, both a log file and configuration file are stored in the same path.
+
 There are 5 possible configurations:
 
 
@@ -229,10 +236,10 @@ python RGBD_prior_sampling.py --config_file ./configs/RGBD_sample_config.yaml
 
 <br />
 
-<!--
-### Structure of configurations file
 
-Each inference 
+## Structure of configurations file
+
+<!--
 
 ```
 conditioning:
