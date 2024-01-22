@@ -10,7 +10,7 @@ This repository contains official PyTorch implementation for **Osmosis: RGBD Dif
 
 ![intro](figures/teaser2.png)
 
-This code is based on [guided-diffusion](https://github.com/openai/guided-diffusion), [DPS](https://github.com/DPS2022/diffusion-posterior-sampling) and [GDP](https://github.com/Fayeben/GenerativeDiffusionPrior)
+This code is based on [guided-diffusion](https://github.com/openai/guided-diffusion) and [DPS](https://github.com/DPS2022/diffusion-posterior-sampling).
 
 
 ## Abstract
