@@ -183,10 +183,11 @@ By default, results are saved in the directory ```./results/<task name>/<dataset
 
 Additionally, both a log file and configuration file are stored in the same path.
 
+<br />
 
 **There are 5 possible configurations:**
 
-<br />
+
 
 #### a) Underwater Image Restoration and Depth Estimation - real data
 
