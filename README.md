@@ -194,8 +194,8 @@ Relevant for real underwater images.
 python osmosis_sampling.py --config_file ./configs/osmosis_sample_config.yaml
 ```
 
-
-
+איק\\\Tיק'קר'קר
+ק'רדג
 <img src='figures/MTN_1099_g0_grid.png' width='600'>
 
 <br />
