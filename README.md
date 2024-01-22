@@ -112,9 +112,9 @@ See the environment file: [link](environment.yml)
 ### 1) Clone the repository
 
 ```
-git clone https://github.com/DPS2022/diffusion-posterior-sampling
+git clone https://github.com/osmosis-diffusion/osmosis-diffusion-code
 
-cd diffusion-posterior-sampling
+cd osmosis-diffusion-code
 ```
 
 <br />
