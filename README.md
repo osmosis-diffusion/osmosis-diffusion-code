@@ -13,6 +13,15 @@ This repository contains official PyTorch implementation for **Osmosis: RGBD Dif
 This code is based on [guided-diffusion](https://github.com/openai/guided-diffusion), [DPS](https://github.com/DPS2022/diffusion-posterior-sampling) and [GDP](https://github.com/Fayeben/GenerativeDiffusionPrior)
 
 
+## Abstract
+
+In this work, our proposed method takes an underwater-captured image as input and outputs a restored image, free from the distorting effects of the water medium, along with a depth estimation of the scene.
+Notably, our method operates with a single image as input.
+We show how to leverage in-air images to train diffusion priors for underwater restoration. We observe that only color data is insufficient, and augment the prior with a depth channel. 
+Thus, we train an unconditional diffusion model prior on the joint space of color and depth, using standard RGBD datasets of natural outdoor scenes in air.
+Using this prior together with a novel guidance method based on the underwater image formation model, we generate posterior samples of clean images, effectively eliminating the water effects. 
+ Despite the trained prior not being exposed to underwater images, our method successfully performs image restoration and depth estimation on underwater scenes.
+
 ## RGBD Prior
 
 In the course of this research, an unconditional Diffusion Probabilistic Model (DDPM) is trained on RGBD (color image and depth map) data. The training follows [improved-diffusion](https://github.com/openai/guided-diffusion) and [guided-diffusion](https://github.com/openai/guided-diffusion).
@@ -207,7 +216,7 @@ python osmosis_sampling.py --config_file ./configs/check_prior_sample_config.yam
 ```
 
 
-#### e) Sample from RGBD Prior - __Without__ guidance
+#### e) Sample from RGBD Prior - **Without** guidance
 
 In this scenario, there is no guidance provided for the sampling process, resulting in the production of an RGB image and its corresponding depth map. 
 
@@ -244,7 +253,7 @@ noise:
     (rate:) # if you use name: poisson, set this.
 ```
 -->
-
+<!--
 ## Citation
 If you find our work interesting, please consider citing
 
@@ -258,3 +267,4 @@ year={},
 url={}
 }
 ```
+-->
