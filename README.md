@@ -266,7 +266,7 @@ sample_pattern:     # the diffusion sampling pattern for the
   # relevant only for "pattern: pcgs"
   # update phi's
   update_start: 0.7    # optimizing phi's (<value>*T)
-  update_end: 0        # optimizing phi's (<value>*T)
+  update_end: 0        
   global_N: 1          # repeat several times the T steps
   local_M: 1           # iterative between update x_t and optimizing phis for the same t - time step
   s_start: 1
@@ -277,64 +277,38 @@ sample_pattern:     # the diffusion sampling pattern for the
   stop_guidance: 0
 
 
-
 unet_model:                      # unet model configurations
   model_path: osmosis_outdoor.pt # pretrained model file name (should be in the ./models/ directory)
   pretrain_model: osmosis        # pretrained model name
 
-# diffusion configurations
-diffusion:
-  sampler: ddpm
-  steps: 1000
-  noise_schedule: linear # linear, cosine
-  model_mean_type: epsilon
-  model_var_type: learned_range
-
-  dynamic_threshold: False
-  clip_denoised: False
-  min_max_denoised: False
-
-  rescale_timesteps: False
-  timestep_respacing: 1000
-
-# task configurations
 conditioning:
-  method: osmosis # osmosis, ps - for checking the prior
-  params:
-    loss_function: norm # norm, mse
+  method: osmosis                       # conditioning method - osmosis, ps 
 
-    loss_weight: depth # none, depth # if "none" so the rest has no meaning
-    weight_function: gamma,1.4,1.4,1 # function, value
-
-    # when measurement operator noise (check_prior) is not underwater - set scale for depth to 0 (vR,vG,vB,vD=0)
-    scale: 7,7,7,0.9 # osmosis
-    gradient_x_prev: True # if False - the gradient of the forward degradation is according x_0_pred
-
-    gradient_clip: True,0.005
+params:    
+    loss_weight: depth                 # none, depth # if "none" so the rest has no meaning
+    weight_function: gamma,1.4,1.4,1   # function,original- [0,1], gamma=((x+value[0])*value[1])^value[2]
+    scale: 7,7,7,0.9                   # guidance scale for each channel (RGBD)
+    gradient_clip: True,0.005          # gradient clipping value (is True)
 
 # specify the loss and its weight/scale, if not specified so no auxiliary loss
+# see the paper for details on the losses
 aux_loss:
   aux_loss:
-    avrg_loss: 0.5 # 0.5
-    val_loss: 20 # 20
+    avrg_loss: 0.5        # scale of that loss
+    val_loss: 20          # scale of that loss
 
 data:
-  batch_size: 1
-
-  name: osmosis
-  root: .\data\underwater\low_res
-  stop_after: -1
-  ground_truth: False
+  name: osmosis                      # dataset name
+  root: .\data\underwater\high_res   # path of the dataset
+  ground_truth: False                # if the dataset includes ground truth
 
 measurement:
   operator:
 
     name: underwater_physical_revised # underwater_physical_revised, haze_physical, noise (for check prior)
+    optimizer: sgd                    # GD, adam, sgd
 
-    optimizer: sgd # GD, adam, sgd
-
-    # does not matter for not underwater
-    depth_type: gamma # original- [0,1, gamma=((x+value[0])*value[1])^value[2]
+    depth_type: gamma                 # original- [0,1], gamma=((x+value[0])*value[1])^value[2]
     value: 1.4,1.4,1
 
     # underwater_physical
