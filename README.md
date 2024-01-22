@@ -17,7 +17,7 @@ This code is based on [guided-diffusion](https://github.com/openai/guided-diffus
 
 In this work, our proposed method takes an underwater-captured image as input and outputs a restored image, free from the distorting effects of the water medium, along with a depth estimation of the scene.
 Notably, our method operates with a single image as input.
-We show how to leverage in-air images to train diffusion priors for underwater restoration. We observe that only color data is insufficient, and augment the prior with a depth channel. 
+We show how to leverage in-air images to train diffusion prior for underwater restoration. We observe that only color data is insufficient, and augment the prior with a depth channel. 
 Thus, we train an unconditional diffusion model prior on the joint space of color and depth, using standard RGBD datasets of natural outdoor scenes in air.
 Using this prior together with a novel guidance method based on the underwater image formation model, we generate posterior samples of clean images, effectively eliminating the water effects. 
  Despite the trained prior not being exposed to underwater images, our method successfully performs image restoration and depth estimation on underwater scenes.
