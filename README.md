@@ -15,14 +15,14 @@ This code is based on [guided-diffusion](https://github.com/openai/guided-diffus
 
 ## RGBD Prior
 
-As part of this work we train an unconditional DDPM based on [improved-diffusion](https://github.com/openai/guided-diffusion) and [guided-diffusion](https://github.com/openai/guided-diffusion).
+In the course of this research, an unconditional Diffusion Probabilistic Model (DDPM) is trained, based on [improved-diffusion](https://github.com/openai/guided-diffusion) and [guided-diffusion](https://github.com/openai/guided-diffusion).
 
-We change the model to suit RGBD data (instead of RGB) by changing the UNet input layer to get 4 channels and output layers to produce 8 channels.
+The model is adapted from a pre-trained unconditional DDPM on ImageNet, provided by [guided-diffusion](https://github.com/openai/guided-diffusion).
+The modifications involve transforming the model to accommodate RGBD data (instead of RGB) by adjusting the UNet input layer to handle 4 channels and the output layers to generate 8 channels. 
 
-We train the new prior using 4 outdoor RGBD dataset: [DIODE](https://diode-dataset.org/) (only outdoor scenes), [HRWSI](https://github.com/KexianHust/Structure-Guided-Ranking-Loss?tab=readme-ov-file), [KITTI](https://www.cvlibs.net/datasets/kitti/) and [ReDWeb-S](https://github.com/nnizhang/SMAC).
+The new prior is trained using 4 outdoor RGBD datasets: [DIODE](https://diode-dataset.org/) (only outdoor scenes), [HRWSI](https://github.com/KexianHust/Structure-Guided-Ranking-Loss?tab=readme-ov-file), [KITTI](https://www.cvlibs.net/datasets/kitti/) and [ReDWeb-S](https://github.com/nnizhang/SMAC).
 
-You can download the trained RGBD prior from [link](https://drive.google.com/file/d/13o2roYPI-2wDOh8LvPHGQIrqRommSuJT/view?usp=drive_link), named "osmosis_outdoor.pt".
-
+The trained RGBD prior, named "osmosis_outdoor.pt," can be downloaded from the provided [link](https://drive.google.com/file/d/13o2roYPI-2wDOh8LvPHGQIrqRommSuJT/view?usp=drive_link)
 
 ## Datasets
 
