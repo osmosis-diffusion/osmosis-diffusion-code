@@ -1,6 +1,6 @@
 # Osmosis: RGBD Diffusion Prior for Underwater Image Restoration
 
-### [Paper](link) , [Project Page](https://osmosis-diffusion.github.io/)
+### <!--[Paper](link) , -->[Project Page](https://osmosis-diffusion.github.io/)
 
 > Osmosis: RGBD Diffusion Prior for Underwater Image Restoration
 >
