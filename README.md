@@ -77,7 +77,7 @@ Each simulation includes 3 folders:
 
 ### Hazed images - [link](https://drive.google.com/drive/folders/18Xpy8MdsIucNIRhTTKD_Q3isbC79TW89?usp=sharing)
 
-We present preliminary results of this method applied to the dehazing task.
+We present preliminary results of applying this method to the dehazing task, therefore, we provide several images captured in hazed conditions.
 
 <br />
 
