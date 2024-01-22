@@ -195,6 +195,8 @@ python osmosis_sampling.py --config_file ./configs/osmosis_sample_config.yaml
 ```
 <img src='figures/MTN_1099_g0_grid.png' width='600'>
 
+<br />
+
 #### b) Underwater Image Restoration and Depth Estimation - simulated data
 
 Relevant for simulated underwater images.
@@ -204,6 +206,8 @@ python osmosis_sampling.py --config_file ./configs/osmosis_simulation_sample_con
 ```
 <img src='figures/226_Image_.bmp_g0_grid.png' width='600'>
 
+<br />
+
 #### c) Hazed Image Restoration and Depth Estimation
 
 Relevant for images in haze environment.
@@ -212,6 +216,8 @@ Relevant for images in haze environment.
 python osmosis_sampling.py --config_file ./configs/osmosis_haze_sample_config.yaml
 ```
 <img src='figures/Picture3.png' width='600'>
+
+<br />
 
 #### d) Check Prior
 
@@ -223,6 +229,8 @@ The depth map is subsequently estimated using prior information.
 python osmosis_sampling.py --config_file ./configs/check_prior_sample_config.yaml
 ```
 <img src='figures/Picture2.png' width='600'>
+
+<br />
 
 #### e) Sample from RGBD Prior - **Without** guidance
 
@@ -342,6 +350,7 @@ record_every: 200
 ```
 
 An example: (the process starts from left to right and sampled every 200 time step)
+
 <img src='figures/MTN_4034_g0_process.png' width='1000'>
 
 <!--
