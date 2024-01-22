@@ -50,18 +50,17 @@ The images are raw and undergo a white balance process.
 
 ### Underwater images - Simulated data with Ground Truth
 
-As part of this work an underwater scenes were simulated for quantitative comparisons.
+As part of this study, underwater scenes were simulated to facilitate quantitative comparisons. 
 
-100 Images were taken from the indoor dataset: [NYUv2](https://cs.nyu.edu/~silberman/datasets/nyu_depth_v2.html),
-which includes images and corresponded depthmap.
+A set of 100 images was sourced from the indoor dataset [NYUv2](https://cs.nyu.edu/~silberman/datasets/nyu_depth_v2.html),
+each accompanied by its corresponding depth map. 
 
-There are two datasets.
+Two datasets are involved in this simulation. 
 
-The simulations parameters are detailed in the paper and in the supplementary data.
+The specific simulation parameters are outlined in both the paper and the supplementary data.
 
 - [Simulation #1](https://drive.google.com/drive/folders/1E4cXHtpNWX3wHrkmiVDF_XUpPnWMOe-0?usp=sharing)
 - [Simulation #2](https://drive.google.com/drive/folders/1_096PIqXR0w4j8ASyZsEPHs1WZj3AscN?usp=sharing)
-
 
 Each simulation includes 3 folders: 
 1. input - the simulated images
