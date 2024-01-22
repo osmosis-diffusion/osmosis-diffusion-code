@@ -124,7 +124,7 @@ cd osmosis-diffusion-code
 
 ### Checkpoint
 
-Create a new dirctory "models".
+Create a new dirctory ```./models```.
 
 From the [link](https://drive.google.com/file/d/13o2roYPI-2wDOh8LvPHGQIrqRommSuJT/view?usp=drive_link), download the checkpoint "osmosis_outdoor.pt" into models directory.
 
@@ -132,9 +132,9 @@ From the [link](https://drive.google.com/file/d/13o2roYPI-2wDOh8LvPHGQIrqRommSuJ
 
 ### Datasets
 
-Create a new dirctory "data".
+Create a new dirctory ```./data```.
 
-Download the relevant [dataset](#datasets) into data directory.
+Download the relevant [dataset](#datasets) into ```./data/``` directory.
 
 
 <br />
@@ -176,7 +176,7 @@ docker run -it --rm --gpus=all dps-docker
 
 ### 4) Inference
 
-The configuration file structure is thoroughly outlined in this [link](#structure-of-configurations-file),
+The configuration file structure is thoroughly outlined in this [section](#structure-of-configurations-file),
 enabling users to modify configurations and fine-tune parameters for experimental purposes.
 
 By default, results are saved in the directory ```./results/<task name>/<dataset name>/<date>/<run#>```.
