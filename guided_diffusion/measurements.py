@@ -310,6 +310,109 @@ class UnderWaterPhysicalRevisedOperator(LearnableOperator):
         return [self.phi_a, self.phi_b, self.phi_inf]
 
 
+@register_operator(name='underwater_physical')
+class UnderWaterPhysicalOperator(LearnableOperator):
+    def __init__(self, device, phi_ab, phi_inf, phi_ab_eta=1e-5, phi_inf_eta=1e-5,
+                 phi_ab_learn_flag=True, phi_inf_learn_flag=True,
+                 batch_size=1, **kwargs):
+
+        self.device = device
+        self.depth_type = kwargs.get("depth_type", None)
+        tmp_value = kwargs.get("value", None)
+        self.value = utilso.get_depth_value(tmp_value)
+
+        # initialization values
+        self.phi_ab = torch.tensor(np.fromstring(phi_ab, dtype=float, sep=','), dtype=torch.float, device=device)
+        self.phi_ab = self.phi_ab.repeat(batch_size, 1).unsqueeze(-1).unsqueeze(-1)
+
+        self.phi_inf = torch.tensor(np.fromstring(phi_inf, dtype=float, sep=','), dtype=torch.float, device=device)
+        self.phi_inf = self.phi_inf.repeat(batch_size, 1).unsqueeze(-1).unsqueeze(-1)
+
+        self.phi_ab_learn_flag = phi_ab_learn_flag
+        self.phi_inf_learn_flag = phi_inf_learn_flag
+
+        # coefficients for the Gradient descend step size
+        self.phi_ab_eta = float(phi_ab_eta) if phi_ab_learn_flag else float(0)
+        self.phi_inf_eta = float(phi_inf_eta) if phi_inf_learn_flag else float(0)
+
+        # set optimizer
+        optimizer = kwargs.get("optimizer", None)
+        self.optimizer = utilso.get_optimizer(optimizer_name=optimizer,
+                                              model_parameters=[{'params': self.phi_ab, "lr": self.phi_ab_eta},
+                                                                {'params': self.phi_inf, "lr": self.phi_inf_eta}])
+
+    def forward(self, data, **kwargs):
+
+        # split into rgb and depth
+        rgb = data[:, 0:-1, :, :]
+        rgb_norm = 0.5 * (rgb + 1)
+        depth_tmp = data[:, -1, :, :].unsqueeze(1)
+
+        # convert depth to relevant coordinates
+        depth = utilso.convert_depth(depth=depth_tmp, depth_type=self.depth_type, value=self.value)
+
+        # the underwater image formation model
+        uw_image = rgb_norm * torch.exp(-self.phi_ab * depth) + self.phi_inf * (1 - torch.exp(-self.phi_ab * depth))
+
+        return uw_image
+
+    def optimize(self, **kwargs):
+
+        freeze_phi = kwargs.get("freeze_phi", False)
+
+        # update only part of the variables - in this case: self.optimizer == "GD"
+        update_phi_ab = self.phi_ab.requires_grad
+        update_phi_inf = self.phi_inf.requires_grad
+
+        # when freeze_phi is True that means no optimization is required
+        if not freeze_phi:
+
+            # no optimizer was specified - GD is the default
+            if self.optimizer is None or self.optimizer == "GD" or self.optimizer == "":
+
+                # classic gradient descend
+                with torch.no_grad():
+                    if update_phi_ab:
+                        self.phi_ab.add_(self.phi_ab.grad, alpha=-self.phi_ab_eta)
+                    if update_phi_inf:
+                        self.phi_inf.add_(self.phi_inf.grad, alpha=-self.phi_inf_eta)
+                # zero the gradients so they will not accumulate
+                if update_phi_ab:
+                    self.phi_ab.grad.zero_()
+                if update_phi_inf:
+                    self.phi_inf.grad.zero_()
+
+            # optimizer was specified
+            else:
+                self.optimizer.step()
+                self.optimizer.zero_grad()
+
+        # return self.beta.detach(), self.b_inf.detach()
+        return {'phi_ab': self.phi_ab.detach(), 'phi_inf': self.phi_inf.detach()}
+
+    def get_variable_gradients(self, **kwargs):
+
+        grad_enable_dict = {"phi_ab": self.phi_ab.requires_grad,
+                            "phi_inf": self.phi_inf.requires_grad}
+
+        return grad_enable_dict
+
+    def set_variable_gradients(self, value=None, **kwargs):
+
+        if value is None:
+            raise ValueError("A value should be specified (True or False for general or dictionary)")
+
+        if isinstance(value, dict):
+            self.phi_ab.requires_grad_(value["phi_ab"])
+            self.phi_inf.requires_grad_(value["phi_inf"])
+        else:
+            self.phi_ab.requires_grad_(value)
+            self.phi_inf.requires_grad_(value)
+
+    def get_variable_list(self, **kwargs):
+
+        return [self.phi_ab, self.phi_inf]
+
 # =============
 # Noise classes
 # =============

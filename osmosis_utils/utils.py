@@ -616,7 +616,7 @@ def set_alternate_length(sample_pattern, time_index, num_timesteps):
             time_index < sample_pattern['stop_guidance'] * num_timesteps:
         alternate_length = 1
 
-    # Until start update there is no optimization of phi (beta and b_inf) - This is mentioned in the gibbsDDRM paper
+    # Until start update there is no optimization of phi's - This is mentioned in the gibbsDDRM paper
     elif time_index > sample_pattern["update_start"] * num_timesteps or \
             time_index < sample_pattern["update_end"] * num_timesteps:
         alternate_length = 1

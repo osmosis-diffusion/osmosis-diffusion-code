@@ -224,7 +224,7 @@ def main() -> None:
                 phi_inf_image = phi_inf * torch.ones_like(sample_rgb, device=torch.device('cpu'))
 
                 # underwater model
-                if 'underwater' in args.measurement['operator']['name']:
+                if 'underwater_physical_revised' in args.measurement['operator']['name']:
 
                     # create the ingredients for the underwater image
                     phi_a = variable_dict['phi_a'].cpu().squeeze(0)
@@ -290,8 +290,9 @@ def main() -> None:
                         phi_inf_image = utilso.add_text_torch_img(phi_inf_image, image_text, font_size=15)
                     # log results for parameters
                     logger.log(log_value_txt)
+
                 # haze model
-                elif 'haze' in args.measurement['operator']['name']:
+                elif ('haze' in args.measurement['operator']['name']) or ('underwater_physical' in args.measurement['operator']['name']):
 
                     # create the ingredients for the hazed image
                     phi_ab = variable_dict['phi_ab'].cpu().squeeze(0)
