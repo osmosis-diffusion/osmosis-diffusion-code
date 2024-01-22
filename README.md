@@ -239,28 +239,128 @@ python RGBD_prior_sampling.py --config_file ./configs/RGBD_sample_config.yaml
 
 ## Structure of configurations file
 
-<!--
+In this section the structure and the *relevant* fields in the configuration file are explained.
+
 
 ```
+save_dir: results    # saving directory path - it will be saved under the running directory
+
+degamma_input: False # should be True in case of NOT linear images, or NOT simulated images, otherwise False
+manual_seed: 0       # manuual seed for the diffusion sampling process
+check_prior: False   # relevant only for the check prior inference
+
+save_singles: True   # save single results images - 1)reference image (input), 2)restored RGB image and 3)depth estimation image
+save_grids: True     # save grid of the results, next to each other
+
+record_process: True # record the sampling process
+record_every: 200    # in case "record_process: True" - record every <value> steps (in this case - 200)
+
+# change unet input and output - for RGBD - it is
+change_input_output_channels: True
+input_channels: 4   # RGBD
+output_channels: 8  # RGBD * 2 - learning sigma = True, if False 4
+
+sample_pattern:     # the diffusion sampling pattern for the 
+  pattern: pcgs     # original, pcgs - from gibbsDDRM
+
+  # relevant only for "pattern: pcgs"
+  # update phi's
+  update_start: 0.7    # optimizing phi's (<value>*T)
+  update_end: 0        # optimizing phi's (<value>*T)
+  global_N: 1          # repeat several times the T steps
+  local_M: 1           # iterative between update x_t and optimizing phis for the same t - time step
+  s_start: 1
+  s_end: 0
+  n_iter: 20           # for each t step, the number of optimization steps for te phi's
+  
+  start_guidance: 1    # PGDiff - when to guide? no guidance at all not in the range (<value>*T)
+  stop_guidance: 0
+
+
+
+unet_model:                      # unet model configurations
+  model_path: osmosis_outdoor.pt # pretrained model file name (should be in the ./models/ directory)
+  pretrain_model: osmosis        # pretrained model name
+
+# diffusion configurations
+diffusion:
+  sampler: ddpm
+  steps: 1000
+  noise_schedule: linear # linear, cosine
+  model_mean_type: epsilon
+  model_var_type: learned_range
+
+  dynamic_threshold: False
+  clip_denoised: False
+  min_max_denoised: False
+
+  rescale_timesteps: False
+  timestep_respacing: 1000
+
+# task configurations
 conditioning:
-    method: # check candidates in guided_diffusion/condition_methods.py
-    params:
-        scale: 0.5
+  method: osmosis # osmosis, ps - for checking the prior
+  params:
+    loss_function: norm # norm, mse
+
+    loss_weight: depth # none, depth # if "none" so the rest has no meaning
+    weight_function: gamma,1.4,1.4,1 # function, value
+
+    # when measurement operator noise (check_prior) is not underwater - set scale for depth to 0 (vR,vG,vB,vD=0)
+    scale: 7,7,7,0.9 # osmosis
+    gradient_x_prev: True # if False - the gradient of the forward degradation is according x_0_pred
+
+    gradient_clip: True,0.005
+
+# specify the loss and its weight/scale, if not specified so no auxiliary loss
+aux_loss:
+  aux_loss:
+    avrg_loss: 0.5 # 0.5
+    val_loss: 20 # 20
 
 data:
-    name: ffhq
-    root: ./data/samples/
+  batch_size: 1
+
+  name: osmosis
+  root: .\data\underwater\low_res
+  stop_after: -1
+  ground_truth: False
 
 measurement:
-    operator:
-        name: # check candidates in guided_diffusion/measurements.py
+  operator:
 
-noise:
-    name:   # gaussian or poisson
-    sigma:  # if you use name: gaussian, set this.
-    (rate:) # if you use name: poisson, set this.
+    name: underwater_physical_revised # underwater_physical_revised, haze_physical, noise (for check prior)
+
+    optimizer: sgd # GD, adam, sgd
+
+    # does not matter for not underwater
+    depth_type: gamma # original- [0,1, gamma=((x+value[0])*value[1])^value[2]
+    value: 1.4,1.4,1
+
+    # underwater_physical
+    phi_a: 1.1,0.95,0.95
+    phi_a_eta: 1e-5
+    phi_a_learn_flag: True
+
+    # underwater_physical
+    phi_b: 0.95, 0.8, 0.8
+    phi_b_eta: 1e-5
+    phi_b_learn_flag: True
+
+    # underwater_physical, haze_physical
+    phi_inf: 0.14, 0.29, 0.49
+    phi_inf_eta: 1e-5
+    phi_inf_learn_flag: True
+
+  noise:
+    name: clean # clean - osmosis, gaussian - ps
+#    sigma: 0.001 # gaussian - ps
+
+
+
+
 ```
--->
+
 <!--
 ## Citation
 If you find our work interesting, please consider citing
