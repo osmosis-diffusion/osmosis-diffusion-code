@@ -268,9 +268,7 @@ sample_pattern:     # the diffusion sampling pattern for the
   update_start: 0.7    # optimizing phi's (<value>*T)
   update_end: 0        
   global_N: 1          # repeat several times the T steps
-  local_M: 1           # iterative between update x_t and optimizing phis for the same t - time step
-  s_start: 1
-  s_end: 0
+  local_M: 1           # number of iterations between update x_t and optimizing phis for the same t - time step
   n_iter: 20           # for each t step, the number of optimization steps for te phi's
   
   start_guidance: 1    # PGDiff - when to guide? no guidance at all not in the range (<value>*T)
