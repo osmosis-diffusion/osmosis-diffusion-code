@@ -197,14 +197,6 @@ def main() -> None:
                 sample, variable_dict, loss, out_xstart = sample_fn(x_start=x_start, measurement=y_n,
                                                                     global_iteration=global_ii)
 
-                # sample, variable_dict, loss, out_xstart = sample_fn(x_start=x_start, measurement=y_n,
-                #                                                     record=args.record_process,
-                #                                                     save_root=out_path, image_idx=i,
-                #                                                     record_every=args.record_every,
-                #                                                     global_iteration=global_ii,
-                #                                                     original_file_name=orig_file_name,
-                #                                                     save_grids_path=save_grids_path)
-
                 # output from the network without guidance - split into rgb and depth image
                 sample_rgb = out_xstart[0, 0:-1, :, :]
                 sample_depth_tmp = out_xstart[0, -1, :, :].unsqueeze(0)
@@ -395,7 +387,6 @@ def main() -> None:
             else:
 
                 sample = sample_fn(x_start=x_start, measurement=y_n)
-                # sample = sample_fn(x_start=x_start, measurement=y_n, record=False, save_root=out_path)
 
                 # split into rgb and depth image - not handling results save for a batch of images
                 sample_rgb = sample.cpu()[0, 0:-1, :, :]
