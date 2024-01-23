@@ -132,15 +132,15 @@ cd osmosis-diffusion-code
 
 ### Checkpoint
 
-Create a new dirctory ```./models```.
+If such a directory does not exist, create a new directory named ```./models```.
 
-From the [link](https://drive.google.com/file/d/13o2roYPI-2wDOh8LvPHGQIrqRommSuJT/view?usp=drive_link), download the checkpoint "osmosis_outdoor.pt" into models directory.
+From the [link](https://drive.google.com/file/d/13o2roYPI-2wDOh8LvPHGQIrqRommSuJT/view?usp=drive_link), download the checkpoint "osmosis_outdoor.pt" into ```./models/``` directory.
 
 <br />
 
 ### Datasets
 
-Create a new dirctory ```./data```.
+If such a directory does not exist, create a new directory named ```./data```.
 
 Download the relevant [dataset](#datasets) into ```./data/``` directory.
 
