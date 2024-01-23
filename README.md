@@ -375,8 +375,13 @@ The first row shows the predicted image on that step, and the second row shows t
 
 <img src='figures/MTN_4034_g0_process.png' width='1000'>
 
-<!--
+<br />
+
 ## Citation
+
+If you find our code relevant to your project, please refer by setting a link to this github repository.
+
+<!--
 If you find our work interesting, please consider citing
 
 ```
