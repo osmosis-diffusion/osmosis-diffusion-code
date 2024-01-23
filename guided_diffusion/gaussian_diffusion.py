@@ -186,7 +186,7 @@ class GaussianDiffusion:
                       pretrain_model=None,
                       image_idx=None,
                       record_every=150,
-                      check_prior=False,
+                      rgb_guidance=False,
                       sample_pattern=None,
                       **kwargs):
         """
@@ -240,7 +240,7 @@ class GaussianDiffusion:
                 noisy_measurement = self.q_sample(measurement, t=time)
 
                 # Give condition. -> guiding
-                if pretrain_model == 'osmosis' and not check_prior:
+                if pretrain_model == 'osmosis' and not rgb_guidance:
 
                     # check if there is a sampling method and check the idx to check if to freeze phis
                     freeze_phi = utilso.is_freeze_phi(sample_pattern, idx, self.num_timesteps)
@@ -294,7 +294,7 @@ class GaussianDiffusion:
                         # print the pbar
                         pbar.set_postfix(pbar_print_dictionary, refresh=False)
 
-                # almost original dps code - check prior
+                # almost original dps code - rgb_guidance
                 else:
                     img, loss = measurement_cond_fn(x_t=out['sample'],
                                                     measurement=measurement,
@@ -332,7 +332,7 @@ class GaussianDiffusion:
             mid_grid_pil.save(pjoin(save_grids_path, f'{original_file_name}_g{global_iteration}_process.png'))
 
         # return the relevant things
-        if pretrain_model == 'osmosis' and not check_prior:
+        if pretrain_model == 'osmosis' and not rgb_guidance:
             return img, variable_dict, loss, out['pred_xstart'].detach().cpu()
 
         else:

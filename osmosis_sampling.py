@@ -101,9 +101,8 @@ def main() -> None:
     logger.configure(dir=out_path)
     logger.log(f"pretrained model file: {args.unet_model['model_path']}")
 
-    # when checking the prior the information of the guidance is not relevant
-    # if (not args.check_prior) and ("underwater" in args.measurement['operator']['name']):
-    if (not args.check_prior):
+    # when guiding rgb the information of the guidance is not relevant
+    if (not args.rgb_guidance):
         log_txt_tmp = utilso.log_text(args=args)
         logger.log(log_txt_tmp)
 
@@ -149,8 +148,13 @@ def main() -> None:
         sampler = create_sampler(**diffusion_config)
         # passing the "stable" arguments with the partial method
         sample_fn = partial(sampler.p_sample_loop, model=model, measurement_cond_fn=measurement_cond_fn,
-                            pretrain_model=args.unet_model['pretrain_model'], check_prior=args.check_prior,
-                            sample_pattern=args.sample_pattern)
+                            pretrain_model=args.unet_model['pretrain_model'], rgb_guidance=args.rgb_guidance,
+                            sample_pattern=args.sample_pattern,
+                            record=args.record_process,
+                            save_root=out_path, image_idx=i,
+                            record_every=args.record_every,
+                            original_file_name=orig_file_name,
+                            save_grids_path=save_grids_path)
 
         logger.log(f"\nInference image {i}: {ref_img_name}\n")
         ref_img = ref_img.to(device)
@@ -186,16 +190,20 @@ def main() -> None:
             x_start = torch.randn(x_start_shape, device=device).requires_grad_()
 
             # this is the osmosis project additional code
-            if args.unet_model["pretrain_model"] == 'osmosis' and not args.check_prior:
+            if args.unet_model["pretrain_model"] == 'osmosis' and not args.rgb_guidance:
 
                 # sampling function which adapted to osmosis project
+
                 sample, variable_dict, loss, out_xstart = sample_fn(x_start=x_start, measurement=y_n,
-                                                                    record=args.record_process,
-                                                                    save_root=out_path, image_idx=i,
-                                                                    record_every=args.record_every,
-                                                                    global_iteration=global_ii,
-                                                                    original_file_name=orig_file_name,
-                                                                    save_grids_path=save_grids_path)
+                                                                    global_iteration=global_ii)
+
+                # sample, variable_dict, loss, out_xstart = sample_fn(x_start=x_start, measurement=y_n,
+                #                                                     record=args.record_process,
+                #                                                     save_root=out_path, image_idx=i,
+                #                                                     record_every=args.record_every,
+                #                                                     global_iteration=global_ii,
+                #                                                     original_file_name=orig_file_name,
+                #                                                     save_grids_path=save_grids_path)
 
                 # output from the network without guidance - split into rgb and depth image
                 sample_rgb = out_xstart[0, 0:-1, :, :]
@@ -292,7 +300,8 @@ def main() -> None:
                     logger.log(log_value_txt)
 
                 # haze model
-                elif ('haze' in args.measurement['operator']['name']) or ('underwater_physical' in args.measurement['operator']['name']):
+                elif ('haze' in args.measurement['operator']['name']) or (
+                        'underwater_physical' in args.measurement['operator']['name']):
 
                     # create the ingredients for the hazed image
                     phi_ab = variable_dict['phi_ab'].cpu().squeeze(0)
@@ -382,9 +391,11 @@ def main() -> None:
 
                 logger.log(f"Run time: {datetime.datetime.now() - start_run_time_ii}")
 
-            # no osmosis - checking prior
+            # no osmosis - rgb guidance
             else:
-                sample = sample_fn(x_start=x_start, measurement=y_n, record=False, save_root=out_path)
+
+                sample = sample_fn(x_start=x_start, measurement=y_n)
+                # sample = sample_fn(x_start=x_start, measurement=y_n, record=False, save_root=out_path)
 
                 # split into rgb and depth image - not handling results save for a batch of images
                 sample_rgb = sample.cpu()[0, 0:-1, :, :]

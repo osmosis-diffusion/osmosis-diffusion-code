@@ -77,8 +77,8 @@ class DenoiseOperator(LinearOperator):
         return data
 
 
-@register_operator(name='check_prior')
-class CheckPriorOperator(LinearOperator):
+@register_operator(name='rgb_guidance')
+class RGBGuidanceOperator(LinearOperator):
     def __init__(self, device, batch_size=1, **kargs):
         self.device = device
         self.batch_size = batch_size
