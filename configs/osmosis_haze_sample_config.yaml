@@ -107,7 +107,7 @@ data:
   batch_size: 1
 
   name: haze
-  root: .\data\haze
+  root: ./data/haze
   stop_after: -1
   ground_truth: False
 

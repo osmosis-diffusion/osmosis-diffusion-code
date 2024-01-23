@@ -77,6 +77,25 @@ class DenoiseOperator(LinearOperator):
         return data
 
 
+@register_operator(name='check_prior')
+class CheckPriorOperator(LinearOperator):
+    def __init__(self, device, batch_size=1, **kargs):
+        self.device = device
+        self.batch_size = batch_size
+
+    def forward(self, data, **kargs):
+        return data
+
+    def transpose(self, data):
+        return data
+
+    def ortho_project(self, data):
+        return data
+
+    def project(self, data):
+        return data
+
+
 # osmosis - learnable Operator
 class LearnableOperator(ABC):
 
@@ -412,6 +431,7 @@ class UnderWaterPhysicalOperator(LearnableOperator):
     def get_variable_list(self, **kwargs):
 
         return [self.phi_ab, self.phi_inf]
+
 
 # =============
 # Noise classes

@@ -5,16 +5,8 @@ degamma_input: False # use it for not linear haze image
 manual_seed: 0
 check_prior: True
 
-# for **check prior** option you need to set few things:
-# check_prior: True
-# conditioning: method: ps
-# conditioning: params: scale: number,number,number,0
-# measurement: operator: name: noise
-# degamma_input: False
-
 save_singles: True # save single reference image, restored RGB image and depth estimation image
 save_grids: True
-text_on_results: True
 
 # record the sampling process
 record_process: True
@@ -72,7 +64,7 @@ unet_model:
 
   # pretrained model
   model_path: osmosis_outdoor.pt
-  pretrain_model: osmosis  # osmosis, imagenet
+  pretrain_model: osmosis
 
 # diffusion configurations
 diffusion:
@@ -83,7 +75,7 @@ diffusion:
   model_var_type: learned_range
 
   dynamic_threshold: False
-  clip_denoised: False
+  clip_denoised: True
   min_max_denoised: False
 
   rescale_timesteps: False
@@ -99,29 +91,27 @@ conditioning:
     weight_function: gamma,1.4,1.4,1 # function, value
 
     # when measurement operator noise (check_prior) is not underwater - set scale for depth to 0 (vR,vG,vB,vD=0)
-    scale: 10,10,10,0 # osmosis
+    scale: 3,3,3,0.1 # osmosis
     gradient_x_prev: True # if False - the gradient of the forward degradation is according x_0_pred
 
-    gradient_clip: True,0.005
+    gradient_clip: False,0.005
 
 # specify the loss and its weight/scale, if not specified so no auxiliary loss
 aux_loss:
   aux_loss:
-    avrg_loss: 0.5 # 0.5
-    val_loss: 20 # 20
 
 data:
   batch_size: 1
 
   name: check_prior
-  root: .\data\check_prior
+  root: ./data/check_prior
   stop_after: -1
   ground_truth: False
 
 measurement:
   operator:
 
-    name: noise # underwater_physical_revised, haze_physical, noise (for check prior)
+    name: check_prior
 
     optimizer: sgd # GD, adam, sgd
 
@@ -145,8 +135,8 @@ measurement:
     phi_inf_learn_flag: True
 
   noise:
-    name: gaussian # clean - osmosis, gaussian - ps
-    sigma: 0.001 # gaussian - ps
+    name: gaussian
+    sigma: 0
 
 
 

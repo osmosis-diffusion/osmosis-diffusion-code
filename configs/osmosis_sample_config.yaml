@@ -107,7 +107,7 @@ data:
   batch_size: 1
 
   name: osmosis
-  root: .\data\underwater\low_res
+  root: ./data/underwater/high_res
   stop_after: -1
   ground_truth: False
 
