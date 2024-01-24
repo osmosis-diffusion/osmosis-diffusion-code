@@ -362,6 +362,11 @@ def main() -> None:
                     sample_depth_vis_pmm_color_pil.save(
                         pjoin(save_singles_path, f'{orig_file_name}_g{global_ii}_depth.png'))
 
+                    # depth percentile min-max - sample_depth_vis_percentile_norm
+                    sample_depth_vis_pmm_pil = tvtf.to_pil_image(sample_depth_vis_pmm)
+                    sample_depth_vis_pmm_pil.save(
+                        pjoin(save_singles_path, f'{orig_file_name}_g{global_ii}_depth_raw.png'))
+
                 # save extended results in the grid
                 if args.save_grids:
 
