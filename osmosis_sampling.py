@@ -207,6 +207,7 @@ def main() -> None:
                 sample_rgb_01_clip = torch.clamp(sample_rgb_01, min=0, max=1)
 
                 # "move" the depth predicted image to start from 0
+                sample_depth_mm = utilso.min_max_norm_range(sample_depth_tmp[0].unsqueeze(0))
                 sample_depth_vis_pmm = utilso.min_max_norm_range_percentile(sample_depth_tmp,
                                                                             vmin=0, vmax=1,
                                                                             percent_low=0.05,
@@ -363,8 +364,8 @@ def main() -> None:
                         pjoin(save_singles_path, f'{orig_file_name}_g{global_ii}_depth.png'))
 
                     # depth percentile min-max - sample_depth_vis_percentile_norm
-                    sample_depth_vis_pmm_pil = tvtf.to_pil_image(sample_depth_vis_pmm)
-                    sample_depth_vis_pmm_pil.save(
+                    sample_depth_vis_mm_pil = tvtf.to_pil_image(sample_depth_mm)
+                    sample_depth_vis_mm_pil.save(
                         pjoin(save_singles_path, f'{orig_file_name}_g{global_ii}_depth_raw.png'))
 
                 # save extended results in the grid
