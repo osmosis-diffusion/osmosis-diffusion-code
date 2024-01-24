@@ -55,7 +55,7 @@ Both datasets contain identical images, with the *Low-Resolution Set* serving as
 
 Our method accepts input images of any resolution, but it standardizes the resolution by resizing them to 256 pixels on the smaller side and subsequently center cropping them.
 
-The underwater images are sourced from three datasets: [SQUID](https://csms.haifa.ac.il/profiles/tTreibitz/datasets/ambient_forwardlooking/index.html), 
+The underwater images are sourced from three datasets: [SQUID](https://zenodo.org/records/5744037) <!--(https://csms.haifa.ac.il/profiles/tTreibitz/datasets/ambient_forwardlooking/index.html)-->, 
 [SeaThru](https://csms.haifa.ac.il/profiles/tTreibitz/datasets/sea_thru/index.html) 
 and [SeaThru-Nerf](https://sea-thru-nerf.github.io/).
 
