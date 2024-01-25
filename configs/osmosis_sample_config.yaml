@@ -106,7 +106,8 @@ data:
   batch_size: 1
 
   name: osmosis
-  root: ./data/underwater/high_res
+#  root: ./data/underwater/high_res
+  root: D:\datasets\SQUID\squid_wb_images
   stop_after: -1
   ground_truth: False
 

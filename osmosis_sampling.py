@@ -40,6 +40,7 @@ def main() -> None:
     args.unet_model['model_path'] = pjoin('.', 'models', args.unet_model['model_path'])
 
     # Device setting
+    torch.cuda.set_device(DEVICE)
     device = torch.device("cuda") if torch.cuda.is_available() else torch.device('cpu')
 
     # Prepare dataloader
@@ -88,6 +89,16 @@ def main() -> None:
     if args.save_singles:
         save_singles_path = pjoin(out_path, f"single_images")
         os.makedirs(save_singles_path)
+
+        save_input_path = pjoin(save_singles_path, "input")
+        os.makedirs(save_input_path)
+        save_rgb_path = pjoin(save_singles_path, "rgb")
+        os.makedirs(save_rgb_path)
+        save_depth_pmm_color_path = pjoin(save_singles_path, "depth_color")
+        os.makedirs(save_depth_pmm_color_path)
+        save_depth_mm_path = pjoin(save_singles_path, "depth_raw")
+        os.makedirs(save_depth_mm_path)
+
     else:
         save_singles_path = None
     # directory for the results a grid
@@ -351,22 +362,23 @@ def main() -> None:
                 if args.save_singles:
                     # input - reference image
                     ref_im_pil = tvtf.to_pil_image(ref_img_01)
-                    ref_im_pil.save(pjoin(save_singles_path, f'{orig_file_name}_g{global_ii}_ref.png'))
+                    # ref_im_pil.save(pjoin(save_singles_path, f'{orig_file_name}_g{global_ii}_ref.png'))
+                    ref_im_pil.save(pjoin(save_input_path, f'{orig_file_name}.png'))
 
                     # rgb clip - sample_rgb_01_clip
                     sample_rgb_01_clip_pil = tvtf.to_pil_image(sample_rgb_01_clip)
-                    sample_rgb_01_clip_pil.save(
-                        pjoin(save_singles_path, f'{orig_file_name}_g{global_ii}_rgb.png'))
+                    # sample_rgb_01_clip_pil.save(pjoin(save_singles_path, f'{orig_file_name}_g{global_ii}_rgb.png'))
+                    sample_rgb_01_clip_pil.save(pjoin(save_rgb_path, f'{orig_file_name}.png'))
 
                     # depth percentile min-max - sample_depth_vis_percentile_norm
                     sample_depth_vis_pmm_color_pil = tvtf.to_pil_image(sample_depth_vis_pmm_color)
-                    sample_depth_vis_pmm_color_pil.save(
-                        pjoin(save_singles_path, f'{orig_file_name}_g{global_ii}_depth.png'))
+                    # sample_depth_vis_pmm_color_pil.save(pjoin(save_singles_path, f'{orig_file_name}_g{global_ii}_depth.png'))
+                    sample_depth_vis_pmm_color_pil.save(pjoin(save_depth_pmm_color_path, f'{orig_file_name}.png'))
 
                     # depth percentile min-max - sample_depth_vis_percentile_norm
                     sample_depth_vis_mm_pil = tvtf.to_pil_image(sample_depth_mm)
-                    sample_depth_vis_mm_pil.save(
-                        pjoin(save_singles_path, f'{orig_file_name}_g{global_ii}_depth_raw.png'))
+                    # sample_depth_vis_mm_pil.save(pjoin(save_singles_path, f'{orig_file_name}_g{global_ii}_depth_raw.png'))
+                    sample_depth_vis_mm_pil.save(pjoin(save_depth_mm_path, f'{orig_file_name}.png'))
 
                 # save extended results in the grid
                 if args.save_grids:
@@ -439,10 +451,13 @@ def main() -> None:
 if __name__ == '__main__':
     parser = ArgumentParser()
     # parser.add_argument("-c", "--config_file", default="./configs/osmosis_sample_config.yaml",
-    parser.add_argument("-c", "--config_file", default="./configs/osmosis_simulation_sample_config.yaml",
+    parser.add_argument("-c", "--config_file", default="./configs/osmosis_sample_config.yaml",
                         help="Configurations file")
+    parser.add_argument("-d", "--device", default=0, help="GPU Device", type=int)
+
     args = vars(parser.parse_args())
     CONFIG_FILE = args["config_file"]
+    DEVICE = args["device"]
 
     print(f"\nConfiguration file:\n{CONFIG_FILE}\n")
 
