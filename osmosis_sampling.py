@@ -450,8 +450,7 @@ def main() -> None:
 
 if __name__ == '__main__':
     parser = ArgumentParser()
-    # parser.add_argument("-c", "--config_file", default="./configs/osmosis_sample_config.yaml",
-    parser.add_argument("-c", "--config_file", default="./configs/osmosis_sample_config.yaml",
+    parser.add_argument("-c", "--config_file", default="./configs/osmosis_simulation_sample_config.yaml",
                         help="Configurations file")
     parser.add_argument("-d", "--device", default=0, help="GPU Device", type=int)
 

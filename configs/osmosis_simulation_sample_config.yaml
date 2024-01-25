@@ -109,9 +109,14 @@ data:
 #  root: ./data/simulation_1/input
 #  gt_rgb: ./data/simulation_1/gt_rgb
 #  gt_depth: ./data/simulation_1/gt_depth
-  root: ./data/simulation_2/input
-  gt_rgb: ./data/simulation_2/gt_rgb
-  gt_depth: ./data/simulation_2/gt_depth
+#  root: ./data/simulation_2/input
+#  gt_rgb: ./data/simulation_2/gt_rgb
+#  gt_depth: ./data/simulation_2/gt_depth
+
+  root: D:\datasets\osmosis_datasets\simulation_3\input_2
+  gt_rgb: D:\datasets\osmosis_datasets\simulation_3\gt_rgb
+  gt_depth: D:\datasets\osmosis_datasets\simulation_3\gt_depth
+
   stop_after: -1
   ground_truth: True
 

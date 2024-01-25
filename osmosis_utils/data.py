@@ -1,7 +1,7 @@
 import cv2
 import os
 from os.path import join as pjoin
-
+import numpy as np
 import glob
 from PIL import Image
 from natsort import natsorted
@@ -89,14 +89,21 @@ class ImagesFolder_GT(Dataset):
         image_name = os.path.basename(self.images_list[idx])
         image = Image.open(self.images_list[idx])
         gt_rgb_image = Image.open(self.gt_rgb_list[idx])
-        gt_depth_image = Image.open(self.gt_depth_list[idx])
+
+        gt_depth_image_tmp = cv2.imread(self.gt_depth_list[idx], cv2.IMREAD_UNCHANGED)
+        if gt_depth_image_tmp.dtype == 'uint16':
+            gt_depth_image = Image.fromarray((gt_depth_image_tmp//256).astype(np.uint8))
+        else:
+            gt_depth_image = Image.fromarray(gt_depth_image_tmp)
+            # gt_depth_image = Image.open(self.gt_depth_list[idx])
 
         if self.transform is not None:
             image = self.transform(image)
             gt_rgb_image = self.transform(gt_rgb_image)
 
             # it is a single channel image (only depth), so preprocess is required
-            gt_depth_image = Image.merge("RGB", (gt_depth_image,gt_depth_image,gt_depth_image))
+            # gt_depth_image = Image.merge("RGB", (gt_depth_image,gt_depth_image,gt_depth_image))
+            gt_depth_image = gt_depth_image.convert(mode="RGB")
             gt_depth_image = self.transform(gt_depth_image)
 
         return [image, gt_rgb_image, gt_depth_image], image_name
