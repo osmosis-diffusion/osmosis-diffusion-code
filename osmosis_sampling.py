@@ -415,21 +415,24 @@ def main() -> None:
                 sample_rgb_01_clip = torch.clamp(sample_rgb_01, 0., 1.)
 
                 # used for visualization
-                sample_depth_vis = utilso.min_max_norm_range(sample_depth_tmp, vmin=0, vmax=1, is_uint8=False)
+                sample_depth_mm = utilso.min_max_norm_range(sample_depth_tmp, vmin=0, vmax=1, is_uint8=False)
                 sample_depth_vis_pmm = utilso.min_max_norm_range_percentile(sample_depth_tmp,
-                                                                            percent_low=0.05, percent_high=0.95)
+                                                                            percent_low=0.05, percent_high=0.99)
                 sample_depth_vis_pmm_color = utilso.depth_tensor_to_color_image(sample_depth_vis_pmm)
 
                 # saving seperated images
                 if args.save_singles:
                     ref_im_pil = tvtf.to_pil_image(ref_img_01)
-                    ref_im_pil.save(pjoin(save_singles_path, f'{orig_file_name}_ref.png'))
+                    ref_im_pil.save(pjoin(save_input_path, f'{orig_file_name}.png'))
 
                     sample_rgb_pil = tvtf.to_pil_image(sample_rgb_01_clip)
-                    sample_rgb_pil.save(pjoin(save_singles_path, f'{orig_file_name}_rgb.png'))
+                    sample_rgb_pil.save(pjoin(save_rgb_path, f'{orig_file_name}.png'))
 
                     sample_depth_vis_pil = tvtf.to_pil_image(sample_depth_vis_pmm_color)
-                    sample_depth_vis_pil.save(pjoin(save_singles_path, f'{orig_file_name}_depth.png'))
+                    sample_depth_vis_pil.save(pjoin(save_depth_pmm_color_path, f'{orig_file_name}.png'))
+
+                    sample_depth_mm_pil = tvtf.to_pil_image(sample_depth_mm)
+                    sample_depth_mm_pil.save(pjoin(save_depth_mm_path, f'{orig_file_name}.png'))
 
                 # create images grid
                 if args.save_grids:
@@ -450,7 +453,8 @@ def main() -> None:
 
 if __name__ == '__main__':
     parser = ArgumentParser()
-    parser.add_argument("-c", "--config_file", default="./configs/osmosis_simulation_sample_config.yaml",
+    # parser.add_argument("-c", "--config_file", default="./configs/osmosis_sample_config.yaml",
+    parser.add_argument("-c", "--config_file", default="./configs/rgb_guidance_sample_config.yaml",
                         help="Configurations file")
     parser.add_argument("-d", "--device", default=0, help="GPU Device", type=int)
 

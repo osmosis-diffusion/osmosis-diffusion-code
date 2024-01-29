@@ -99,15 +99,17 @@ conditioning:
 # specify the loss and its weight/scale, if not specified so no auxiliary loss
 aux_loss:
   aux_loss:
-    avrg_loss: 0.5 # 0.5
+    avrg_loss: 2 # 0.5
     val_loss: 20 # 20
 
 data:
   batch_size: 1
 
-  name: osmosis
+#  name: osmosis
+  name: squid
 #  root: ./data/underwater/high_res
   root: D:\datasets\SQUID\squid_wb_images
+#  root: D:\master\CVPR_rebuttal\SQUID\squid_dataset\lowres\squid_wb_lowres
   stop_after: -1
   ground_truth: False
 
@@ -118,8 +120,7 @@ measurement:
 
     optimizer: sgd # GD, adam, sgd
 
-    # does not matter for not underwater
-    depth_type: gamma # original- [0,1, gamma=((x+value[0])*value[1])^value[2]
+    depth_type: gamma # original- [0,1], gamma=((x+value[0])*value[1])^value[2]
     value: 1.4,1.4,1
 
     # underwater_physical

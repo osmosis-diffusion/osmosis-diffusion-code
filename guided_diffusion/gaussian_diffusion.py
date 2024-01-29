@@ -229,12 +229,13 @@ class GaussianDiffusion:
 
                 img.requires_grad = True if guidance_flag else False
 
-                # "clean" the noise with the unet
-                out = self.p_mean_variance(model=model, x=img, t=time)
-                out['sample'] = out['mean']
+                if rgb_guidance:
+                    out = self.p_sample(x=img, t=time, model=model)
 
-                # calculating the noise for future calculations
-                current_additional_noise = torch.randn_like(out['mean'], device=img.device)
+                else:
+                    # "clean" the noise with the unet
+                    out = self.p_mean_variance(model=model, x=img, t=time)
+                    out['sample'] = out['mean']
 
                 # there is no use of the noisy measurement, do we need it? I don't know yet
                 noisy_measurement = self.q_sample(measurement, t=time)
@@ -329,7 +330,7 @@ class GaussianDiffusion:
             # save rgb and depth information - images are clipped, depth is percentiled + min-max normalized
             mid_grid = make_grid(rgb_record_list + depth_record_list, nrow=len(rgb_record_list))
             mid_grid_pil = tvtf.to_pil_image(mid_grid)
-            mid_grid_pil.save(pjoin(save_grids_path, f'{original_file_name}_g{global_iteration}_process.png'))
+            mid_grid_pil.save(pjoin(save_grids_path, f'{original_file_name}_process.png'))
 
         # return the relevant things
         if pretrain_model == 'osmosis' and not rgb_guidance:
