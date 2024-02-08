@@ -1,5 +1,5 @@
 # saving directory
-save_dir: results
+save_dir: ./results
 
 degamma_input: False # use it for not linear haze image
 manual_seed: 0
@@ -21,8 +21,6 @@ output_channels: 8  # RGBD * 2 - learning sigma = True, if False 4
 sample_pattern:
 
   pattern: pcgs  # original, pcgs - from gibbsDDRM
-
-  # relevant only for "pattern: pcgs"
 
   # update phi's
   update_start: 0.7
@@ -63,7 +61,7 @@ unet_model:
   use_new_attention_order: False
 
   # pretrained model
-  model_path: osmosis_outdoor.pt
+  model_path: ./models/osmosis_outdoor.pt
   pretrain_model: osmosis
 
 # diffusion configurations
@@ -90,7 +88,7 @@ conditioning:
     loss_weight: depth # none, depth # if "none" so the rest has no meaning
     weight_function: gamma,1.4,1.4,1 # function, value
 
-    scale: 4,4,4,1 # osmosis
+    scale: 3,3,3,0.1 # osmosis
     gradient_x_prev: True # if False - the gradient of the forward degradation is according x_0_pred
 
     gradient_clip: True,0.001
@@ -101,38 +99,14 @@ aux_loss:
 
 data:
   batch_size: 1
-
   name: rgb_guidance
-#  root: ./data/rgb_guidance
-  root: D:\master\CVPR_rebuttal\osmosis_prior\dataset
+  root: ./data/rgb_guidance
   stop_after: -1
   ground_truth: False
 
 measurement:
   operator:
-
     name: rgb_guidance
-
-#    optimizer: sgd # GD, adam, sgd
-#
-#    # does not matter for not underwater
-#    depth_type: gamma # original- [0,1, gamma=((x+value[0])*value[1])^value[2]
-#    value: 1.4,1.4,1
-#
-#    # underwater_physical
-#    phi_a: 1.1,0.95,0.95
-#    phi_a_eta: 1e-5
-#    phi_a_learn_flag: True
-#
-#    # underwater_physical
-#    phi_b: 0.95, 0.8, 0.8
-#    phi_b_eta: 1e-5
-#    phi_b_learn_flag: True
-#
-#    # underwater_physical, haze_physical
-#    phi_inf: 0.14, 0.29, 0.49
-#    phi_inf_eta: 1e-5
-#    phi_inf_learn_flag: True
 
   noise:
     name: gaussian

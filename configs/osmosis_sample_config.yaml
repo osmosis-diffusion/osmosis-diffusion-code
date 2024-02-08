@@ -1,5 +1,5 @@
 # saving directory
-save_dir: results
+save_dir: ./results
 
 degamma_input: False # use it for not linear haze image
 manual_seed: 0
@@ -7,7 +7,6 @@ rgb_guidance: False
 
 save_singles: True # save single reference image, restored RGB image and depth estimation image
 save_grids: True
-text_on_results: False
 
 # record the sampling process
 record_process: True
@@ -64,7 +63,7 @@ unet_model:
   use_new_attention_order: False
 
   # pretrained model
-  model_path: osmosis_outdoor.pt
+  model_path: ./models/osmosis_outdoor.pt
   pretrain_model: osmosis
 
 # diffusion configurations
@@ -91,25 +90,23 @@ conditioning:
     loss_weight: depth # none, depth # if "none" so the rest has no meaning
     weight_function: gamma,1.4,1.4,1 # function, value
 
-    scale: 7,7,7,0.9 # osmosis
+    scale: 7,7,7,0.9 # other suggestion - 4,4,4,1
     gradient_x_prev: True # if False - the gradient of the forward degradation is according x_0_pred
 
-    gradient_clip: True,0.005
+    gradient_clip: True,0.005 # other suggestion - True,0.001
 
 # specify the loss and its weight/scale, if not specified so no auxiliary loss
 aux_loss:
   aux_loss:
-    avrg_loss: 2 # 0.5
-    val_loss: 20 # 20
+    avrg_loss: 0.5
+    val_loss: 20
 
 data:
   batch_size: 1
 
-#  name: osmosis
-  name: squid
-#  root: ./data/underwater/high_res
-  root: D:\datasets\SQUID\squid_wb_images
-#  root: D:\master\CVPR_rebuttal\SQUID\squid_dataset\lowres\squid_wb_lowres
+  name: osmosis
+  root: ./data/underwater/high_res
+
   stop_after: -1
   ground_truth: False
 
@@ -120,7 +117,7 @@ measurement:
 
     optimizer: sgd # GD, adam, sgd
 
-    depth_type: gamma # original- [0,1], gamma=((x+value[0])*value[1])^value[2]
+    depth_type: original # original- [0,1], gamma=((x+value[0])*value[1])^value[2]
     value: 1.4,1.4,1
 
     # underwater_physical
@@ -139,8 +136,7 @@ measurement:
     phi_inf_learn_flag: True
 
   noise:
-    name: clean # clean - osmosis, gaussian - ps
-#    sigma: 0.001 # gaussian - ps
+    name: clean
 
 
 

@@ -25,13 +25,12 @@ def main() -> None:
     # read the config file and return an argsparse Namespace object
     args = utilso.arguments_from_file(CONFIG_FILE)
     args.image_size = args.unet_model['image_size']
-    args.unet_model['model_path'] = pjoin('.', 'models', args.unet_model['model_path'])
 
     # Device setting
     device = torch.device("cuda") if torch.cuda.is_available() else torch.device('cpu')
 
     # output directory
-    out_path = utilso.update_save_dir_date(pjoin(".", args.save_dir, "RGBD_prior"))
+    out_path = utilso.update_save_dir_date(pjoin(args.save_dir, "RGBD_prior"))
 
     # create txt file with the configurations
     utilso.yaml_to_txt(CONFIG_FILE, pjoin(out_path, f"configurations.txt"))

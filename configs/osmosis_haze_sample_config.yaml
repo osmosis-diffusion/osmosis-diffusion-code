@@ -1,5 +1,5 @@
 # saving directory
-save_dir: results
+save_dir: ./results
 
 degamma_input: True # use it for not linear haze images
 manual_seed: 0
@@ -7,7 +7,6 @@ rgb_guidance: False
 
 save_singles: True # save single reference image, restored RGB image and depth estimation image
 save_grids: True
-text_on_results: False
 
 # record the sampling process
 record_process: True
@@ -64,8 +63,8 @@ unet_model:
   use_new_attention_order: False
 
   # pretrained model
-  model_path: osmosis_outdoor.pt
-  pretrain_model: osmosis  # osmosis, imagenet
+  model_path: ./models/osmosis_outdoor.pt
+  pretrain_model: osmosis
 
 # diffusion configurations
 diffusion:
@@ -122,19 +121,17 @@ measurement:
     depth_type: gamma # original- [0,1, gamma=((x+value[0])*value[1])^value[2]
     value: 1.4,1.4,1
 
-    # underwater_physical, haze_physical
     phi_inf: 0.14, 0.29, 0.49
     phi_inf_eta: 1e-5
     phi_inf_learn_flag: True
 
-    # haze_physical
     phi_ab: 1.0
     phi_ab_eta: 1e-5
     phi_ab_learn_flag: True
 
   noise:
-    name: clean # clean - osmosis, gaussian - ps
-#    sigma: 0.001 # gaussian - ps
+    name: clean
+
 
 
 

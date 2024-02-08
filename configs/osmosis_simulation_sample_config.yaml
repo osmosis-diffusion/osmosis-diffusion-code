@@ -1,5 +1,5 @@
 # saving directory
-save_dir: results
+save_dir: ./results
 
 degamma_input: False # use it for not linear haze image
 manual_seed: 0
@@ -7,7 +7,6 @@ rgb_guidance: False
 
 save_singles: True # save single reference image, restored RGB image and depth estimation image
 save_grids: True
-text_on_results: False
 
 # record the sampling process
 record_process: True
@@ -64,8 +63,8 @@ unet_model:
   use_new_attention_order: False
 
   # pretrained model
-  model_path: osmosis_outdoor.pt
-  pretrain_model: osmosis  # osmosis, imagenet
+  model_path: ./models/osmosis_outdoor.pt
+  pretrain_model: osmosis
 
 # diffusion configurations
 diffusion:
@@ -99,23 +98,15 @@ conditioning:
 # specify the loss and its weight/scale, if not specified so no auxiliary loss
 aux_loss:
   aux_loss:
-#    avrg_loss: 0
     val_loss: 40
 
 data:
   batch_size: 1
 
   name: simulation
-#  root: ./data/simulation_1/input
-#  gt_rgb: ./data/simulation_1/gt_rgb
-#  gt_depth: ./data/simulation_1/gt_depth
-#  root: ./data/simulation_2/input
-#  gt_rgb: ./data/simulation_2/gt_rgb
-#  gt_depth: ./data/simulation_2/gt_depth
-
-  root: D:\datasets\osmosis_datasets\simulation_3\input_2
-  gt_rgb: D:\datasets\osmosis_datasets\simulation_3\gt_rgb
-  gt_depth: D:\datasets\osmosis_datasets\simulation_3\gt_depth
+  root: ./data/simulation_1/input
+  gt_rgb: ./data/simulation_1/gt_rgb
+  gt_depth: ./data/simulation_1/gt_depth
 
   stop_after: -1
   ground_truth: True
@@ -127,23 +118,18 @@ measurement:
 
     optimizer: sgd # GD, adam, sgd
 
-    # does not matter for not underwater
     depth_type: original # original- [0,1], gamma=((x+value[0])*value[1])^value[2]
     value: 1.4,1.4,1
 
-    # underwater_physical
     phi_ab: 1.1,0.95,0.95
     phi_ab_eta: 1e-5
     phi_ab_learn_flag: True
 
-    # underwater_physical, haze_physical
     phi_inf: 0.2,0.4,0.7
     phi_inf_eta: 1e-5
     phi_inf_learn_flag: True
 
   noise:
-    name: clean # clean - osmosis, gaussian - ps
-#    sigma: 0.001 # gaussian - ps
-
+    name: clean
 
 

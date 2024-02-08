@@ -6,7 +6,7 @@ from functools import partial
 import os
 from os.path import join as pjoin
 from argparse import ArgumentParser
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image
 import datetime
 
 import torch
@@ -14,9 +14,6 @@ from torch.utils.data import DataLoader, Dataset
 import torchvision.transforms as transforms
 import torchvision.transforms.functional as tvtf
 from torchvision.utils import make_grid
-from torchmetrics.image import StructuralSimilarityIndexMeasure, PeakSignalNoiseRatio
-
-import matplotlib.cm as cm
 
 from guided_diffusion.condition_methods import get_conditioning_method
 from guided_diffusion.measurements import get_noise, get_operator
@@ -37,7 +34,6 @@ def main() -> None:
     # read the config file and return an argsparse Namespace object
     args = utilso.arguments_from_file(CONFIG_FILE)
     args.image_size = args.unet_model['image_size']
-    args.unet_model['model_path'] = pjoin('.', 'models', args.unet_model['model_path'])
 
     # Device setting
     torch.cuda.set_device(DEVICE)
@@ -46,7 +42,7 @@ def main() -> None:
     # Prepare dataloader
     data_config = args.data
 
-    # resize small side to be 256px, cropping 256x256, normalizing to [-1,1]
+    # resize small side to be 256px, center cropping 256x256, normalizing to [-1,1]
     transform = transforms.Compose([transforms.ToTensor(),
                                     transforms.Resize(size=256),
                                     transforms.CenterCrop(size=[256, 256]),
@@ -79,7 +75,7 @@ def main() -> None:
 
     # output directory
     measurement_name = measure_config['operator']['name']
-    out_path = pjoin(".", args.save_dir, measurement_name, args.data['name'])
+    out_path = pjoin(args.save_dir, measurement_name, args.data['name'])
     out_path = utilso.update_save_dir_date(out_path)
 
     # create txt file with the configurations
@@ -98,9 +94,9 @@ def main() -> None:
         os.makedirs(save_depth_pmm_color_path)
         save_depth_mm_path = pjoin(save_singles_path, "depth_raw")
         os.makedirs(save_depth_mm_path)
-
     else:
         save_singles_path = None
+
     # directory for the results a grid
     if args.save_grids:
         save_grids_path = pjoin(out_path, f"grid_results")
@@ -274,32 +270,6 @@ def main() -> None:
                                     f"\n\nNorm loss: {norm_loss_final}" \
                                     f"\nFinal loss: {np.round(np.array(loss), decimals=3)}"
 
-                    # if GT is existed, check for losses (psnr, ssim, )
-                    if gt_flag:
-                        psnr_ob = PeakSignalNoiseRatio(data_range=(0., 1.))
-                        ssim_ob = StructuralSimilarityIndexMeasure(data_range=(0., 1.))
-
-                        psnr = psnr_ob(sample_rgb_01.unsqueeze(0), gt_rgb_img_01.unsqueeze(0))
-                        ssim = ssim_ob(sample_rgb_01.unsqueeze(0), gt_rgb_img_01.unsqueeze(0))
-
-                        add_calc_text = f"\nPSNR: {np.round([psnr], decimals=3)}, SSIM: {np.round([ssim], decimals=3)}\n"
-                        log_value_txt += add_calc_text
-
-                    # print phi's on phi_inf image
-                    # opher remove - maybe
-                    if args.text_on_results:
-                        image_text = f"\nInitialized values: " \
-                                     f"\nphi_a: [{measure_config['operator']['phi_a']}], lr: {measure_config['operator']['phi_a_eta']}" \
-                                     f"\nphi_b: [{measure_config['operator']['phi_b']}], lr: {measure_config['operator']['phi_b_eta']}" \
-                                     f"\nphi_inf: [{measure_config['operator']['phi_inf']}], lr: {measure_config['operator']['phi_inf_eta']}" \
-                                     f"\nResults values: " \
-                                     f"\nphi_a: {print_phi_a}" \
-                                     f"\nphi_b: {print_phi_b}" \
-                                     f"\nphi_inf: {print_phi_inf}" \
-                                     f"\nNorm loss: {np.round(norm_loss_final, decimals=5)}"
-                        if gt_flag:
-                            image_text += add_calc_text
-                        phi_inf_image = utilso.add_text_torch_img(phi_inf_image, image_text, font_size=15)
                     # log results for parameters
                     logger.log(log_value_txt)
 
@@ -335,22 +305,6 @@ def main() -> None:
                                     f"\nphi_inf: {print_phi_inf}" \
                                     f"\n\nNorm loss: {norm_loss_final}" \
                                     f"\nFinal loss: {np.round(np.array(loss), decimals=5)}"
-
-                    # print phis and phi_inf on phi_inf image
-                    # opher remove - maybe
-                    if args.text_on_results:
-                        image_text = f"\nInitialized values: " \
-                                     f"\nphi: [{measure_config['operator']['phi_ab']}], lr: {measure_config['operator']['phi_ab_eta']}" \
-                                     f"\nphi_inf: [{measure_config['operator']['phi_inf']}], lr: {measure_config['operator']['phi_inf_eta']}" \
-                                     f"\nResults values: " \
-                                     f"\nphi: {print_phi_ab}" \
-                                     f"\nphi_inf: {print_phi_inf}" \
-                                     f"\nNorm loss: {np.round(norm_loss_final, decimals=5)}"
-
-                        if gt_flag:
-                            image_text += add_calc_text
-
-                        phi_inf_image = utilso.add_text_torch_img(phi_inf_image, image_text, font_size=15)
 
                     # log results for parameters
                     logger.log(log_value_txt)
@@ -453,8 +407,7 @@ def main() -> None:
 
 if __name__ == '__main__':
     parser = ArgumentParser()
-    # parser.add_argument("-c", "--config_file", default="./configs/osmosis_sample_config.yaml",
-    parser.add_argument("-c", "--config_file", default="./configs/rgb_guidance_sample_config.yaml",
+    parser.add_argument("-c", "--config_file", default="./configs/osmosis_sample_config.yaml",
                         help="Configurations file")
     parser.add_argument("-d", "--device", default=0, help="GPU Device", type=int)
 

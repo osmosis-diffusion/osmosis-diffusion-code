@@ -35,7 +35,7 @@ unet_model:
   use_new_attention_order: False
 
   # pretrained model
-  model_path: osmosis_outdoor.pt
+  model_path: ./models/osmosis_outdoor.pt
   pretrain_model: osmosis  # osmosis, imagenet
 
 # diffusion configurations
