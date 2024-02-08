@@ -86,17 +86,17 @@ The images are linear (were not undergo any non-linear processing) and undergo a
 
 As part of this study, underwater scenes were simulated to facilitate quantitative comparisons.
 
-A set of 100 images was sourced from the indoor
-dataset [NYUv2](https://cs.nyu.edu/~silberman/datasets/nyu_depth_v2.html),
+Images are sourced from the indoor dataset 
+[NYUv2](https://cs.nyu.edu/~silberman/datasets/nyu_depth_v2.html),
 each accompanied by its corresponding depth map.
 
-Two datasets are involved in this simulation.
+Three datasets are involved in this simulation.
 
 The specific simulation parameters are outlined in both the paper and the supplementary data.
 
-- [Simulation #1](https://drive.google.com/drive/folders/1E4cXHtpNWX3wHrkmiVDF_XUpPnWMOe-0?usp=sharing)
-- [Simulation #2](https://drive.google.com/drive/folders/1_096PIqXR0w4j8ASyZsEPHs1WZj3AscN?usp=sharing)
-- [Simulation #3](https://drive.google.com/drive/folders/1XnZ0Qp8egszzsiczxLXcbyFyvI-9L6vY?usp=sharing)
+- [Simulation #1](https://drive.google.com/drive/folders/1E4cXHtpNWX3wHrkmiVDF_XUpPnWMOe-0?usp=sharing) - 100 images
+- [Simulation #2](https://drive.google.com/drive/folders/1_096PIqXR0w4j8ASyZsEPHs1WZj3AscN?usp=sharing) - 100 images
+- [Simulation #3](https://drive.google.com/drive/folders/1XnZ0Qp8egszzsiczxLXcbyFyvI-9L6vY?usp=sharing) - 1449 images
 
 Each simulation includes 3 folders:
 
