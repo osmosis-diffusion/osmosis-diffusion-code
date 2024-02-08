@@ -280,7 +280,7 @@ python osmosis_sampling.py -c ./configs/osmosis_haze_sample_config.yaml
 On the left is a simulated underwater image, serving as the input to our method. In the middle is the restored RGB
 image, and on the right is the depth estimation, where black represents close distances and white farther distances.
 
-<img src='figures/Picture3.png' width='600'>
+<img src='figures/lviv_input_g0_grid.png' width='600'>
 
 <br />
 
