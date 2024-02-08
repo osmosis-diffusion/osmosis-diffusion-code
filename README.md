@@ -94,9 +94,9 @@ Three datasets are involved in this simulation.
 
 The specific simulation parameters are outlined in both the paper and the supplementary data.
 
-- [Simulation #1](https://drive.google.com/drive/folders/1E4cXHtpNWX3wHrkmiVDF_XUpPnWMOe-0?usp=sharing) - 100 images
-- [Simulation #2](https://drive.google.com/drive/folders/1_096PIqXR0w4j8ASyZsEPHs1WZj3AscN?usp=sharing) - 100 images
-- [Simulation #3](https://drive.google.com/drive/folders/1XnZ0Qp8egszzsiczxLXcbyFyvI-9L6vY?usp=sharing) - 1449 images
+- [Simulation #1](https://drive.google.com/drive/folders/1E4cXHtpNWX3wHrkmiVDF_XUpPnWMOe-0?usp=sharing) - subset of 100 images
+- [Simulation #2](https://drive.google.com/drive/folders/1_096PIqXR0w4j8ASyZsEPHs1WZj3AscN?usp=sharing) - subset of 100 images
+- [Simulation #3](https://drive.google.com/drive/folders/1XnZ0Qp8egszzsiczxLXcbyFyvI-9L6vY?usp=sharing) - all 1449 images
 
 Each simulation includes 3 folders:
 
