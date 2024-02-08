@@ -10,7 +10,7 @@ from PIL import Image
 import datetime
 
 import torch
-from torch.utils.data import DataLoader, Dataset
+from torch.utils.data import DataLoader
 import torchvision.transforms as transforms
 import torchvision.transforms.functional as tvtf
 from torchvision.utils import make_grid

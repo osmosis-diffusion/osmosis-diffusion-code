@@ -2,21 +2,17 @@ import sys
 import os
 from os.path import join as pjoin
 import numpy as np
-import math
 import yaml
 import argparse
 import datetime
 import re
-from scipy import ndimage
 from PIL import Image, ImageDraw, ImageFont
-from skimage import io, color, filters
 import matplotlib.pyplot as plt
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.nn.modules.loss import _Loss
 import torch.optim as optim
-import torch.optim.lr_scheduler as lr_scheduler
 import torchvision.transforms.functional as tvtf
 
 

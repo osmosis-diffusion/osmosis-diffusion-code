@@ -13,5 +13,4 @@ dependencies:
   - scikit-image
   - natsort
   - pandas
-  - torchmetrics
 prefix: D:\miniconda3\envs\osmosis

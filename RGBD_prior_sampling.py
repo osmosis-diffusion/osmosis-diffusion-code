@@ -1,11 +1,9 @@
 # %% imports
 import sys
 
-import numpy as np
 import os
 from os.path import join as pjoin
 from argparse import ArgumentParser
-from PIL import Image
 import datetime
 
 import torch
