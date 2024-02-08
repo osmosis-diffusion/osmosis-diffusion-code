@@ -96,6 +96,7 @@ The specific simulation parameters are outlined in both the paper and the supple
 
 - [Simulation #1](https://drive.google.com/drive/folders/1E4cXHtpNWX3wHrkmiVDF_XUpPnWMOe-0?usp=sharing)
 - [Simulation #2](https://drive.google.com/drive/folders/1_096PIqXR0w4j8ASyZsEPHs1WZj3AscN?usp=sharing)
+- [Simulation #3](https://drive.google.com/drive/folders/1XnZ0Qp8egszzsiczxLXcbyFyvI-9L6vY?usp=sharing)
 
 Each simulation includes 3 folders:
 

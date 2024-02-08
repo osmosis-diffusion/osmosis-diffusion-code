@@ -23,8 +23,10 @@ def main() -> None:
     # read the config file and return an argsparse Namespace object
     args = utilso.arguments_from_file(CONFIG_FILE)
     args.image_size = args.unet_model['image_size']
+    args.unet_model['model_path'] = os.path.abspath(args.unet_model['model_path'])
 
     # Device setting
+    torch.cuda.set_device(DEVICE)
     device = torch.device("cuda") if torch.cuda.is_available() else torch.device('cpu')
 
     # output directory
@@ -118,8 +120,11 @@ if __name__ == '__main__':
     parser = ArgumentParser()
     parser.add_argument("-c", "--config_file", default="./configs/RGBD_sample_config.yaml",
                         help="Configurations file")
+    parser.add_argument("-d", "--device", default=0, help="GPU Device", type=int)
     args = vars(parser.parse_args())
-    CONFIG_FILE = args["config_file"]
+
+    CONFIG_FILE = os.path.abspath(args["config_file"])
+    DEVICE = args["device"]
 
     print(f"\nConfiguration file:\n{CONFIG_FILE}\n")
 
