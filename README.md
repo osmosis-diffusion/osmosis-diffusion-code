@@ -91,6 +91,8 @@ This folder contains 4 sub folders, one for each subset - Katzaa, Nachsholim, Mi
 
 Those images are linear (were not undergo any non-linear processing) and undergo a white balance process.
 
+SQUID Dataset was used from depth estimation evaluation.
+
 <br />
 
 
