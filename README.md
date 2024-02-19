@@ -408,7 +408,7 @@ measurement:
 
   noise:                              # added noise
     name: clean                       # clean - osmosis, gaussian - ps
-    sigma: 0.001                      # comment in case of "clean" uncomment in case of "gaussian"
+    # sigma: 0.001                      # comment in case of "clean" uncomment in case of "gaussian"
 
 ```
 
