@@ -211,14 +211,11 @@ See dependencies at environment.yml file - [link](environment.yml)
 
 ### Option 2 - Build Docker image
 
-Install docker engine, GPU driver and proper cuda before running the following commands.
+Before executing the following commands, ensure that the Docker engine, GPU driver, and appropriate CUDA are installed.
 
-<!--
-Verify that the data paths, model path and results path is in the working directory.
--->
+If using the Docker image, ensure that the data paths, model path, and results path are in the working directory.
 
-Get into ```osmosis-diffusion-code``` directory (where the project was cloned to) and the run in the command line:  
-
+Navigate to the ```osmosis-diffusion-code``` directory (where the project was cloned), and run the following commands in the command line:
 ```
 docker build -t osmosis_docker .
 
