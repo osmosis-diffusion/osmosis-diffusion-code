@@ -4,8 +4,8 @@
 
 > Osmosis: RGBD Diffusion Prior for Underwater Image Restoration
 >
-> [Opher Bar Nathan](mailto:barnathanopher@gmail.com) | Deborah
-> Levy | [Tali Treibitz](https://www.viseaon.haifa.ac.il/) | [Dan Rosenbaum ](https://danrsm.github.io/)
+> [Opher Bar Nathan](mailto:barnathanopher@gmail.com) | [Deborah
+> Levy](https://www.linkedin.com/in/deborah-levy-78a290b1/) | [Tali Treibitz](https://www.viseaon.haifa.ac.il/) | [Dan Rosenbaum ](https://danrsm.github.io/)
 
 This repository contains official PyTorch implementation for **Osmosis: RGBD Diffusion Prior for Underwater Image
 Restoration**.
@@ -278,7 +278,7 @@ python osmosis_sampling.py -c ./configs/osmosis_haze_sample_config.yaml
 ```
 
 On the left is a simulated underwater image, serving as the input to our method. In the middle is the restored RGB
-image, and on the right is the depth estimation, where black represents close distances and white farther distances.
+image, and on the right is the depth estimation, where where blue represents close distances and yellow farther distances.
 
 <img src='figures/lviv_input_g0_grid.png' width='600'>
 
@@ -296,9 +296,9 @@ python osmosis_sampling.py -c ./configs/rgb_guidance_sample_config.yaml
 ```
 
 On the left is the input image. In the middle is the restored RGB image, designed to closely resemble the input image.
-On the right is the depth estimation, with black indicating close distances and white representing farther distances.
+On the right is the depth estimation, where blue represents close distances and yellow farther distances.
 
-<img src='figures/Picture2.png' width='600'>
+<img src='figures/00022_00197_outdoor_300_050.png' width='600'>
 
 <br />
 
@@ -325,7 +325,7 @@ Here, black indicates close distances, and white represents farther distances.
 In this section the structure and the *relevant* fields in the configuration file are explained.
 
 ```
-save_dir: results    # saving directory path - it will be saved under the running directory
+save_dir: ./results    # saving directory path
 
 degamma_input: False # should be True in case of NOT linear images, or NOT simulated images, otherwise False
 manual_seed: 0       # manuual seed for the diffusion sampling process
@@ -357,9 +357,9 @@ sample_pattern:     # the diffusion sampling pattern for the
   stop_guidance: 0
 
 
-unet_model:                      # unet model configurations
-  model_path: osmosis_outdoor.pt # pretrained model file name (should be in the ./models/ directory)
-  pretrain_model: osmosis        # pretrained model name
+unet_model:                               # unet model configurations
+  model_path: ./models/osmosis_outdoor.pt # pretrained model path
+  pretrain_model: osmosis                 # pretrained model name
 
 conditioning:
   method: osmosis                       # conditioning method - osmosis, ps 

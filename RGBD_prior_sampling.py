@@ -30,7 +30,8 @@ def main() -> None:
     device = torch.device("cuda") if torch.cuda.is_available() else torch.device('cpu')
 
     # output directory
-    out_path = utilso.update_save_dir_date(pjoin(args.save_dir, "RGBD_prior"))
+    out_path = os.path.abspath(pjoin(args.save_dir, "RGBD_prior"))
+    out_path = utilso.update_save_dir_date(out_path)
 
     # create txt file with the configurations
     utilso.yaml_to_txt(CONFIG_FILE, pjoin(out_path, f"configurations.txt"))

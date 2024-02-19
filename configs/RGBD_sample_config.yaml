@@ -1,5 +1,5 @@
 # saving directory
-save_dir: results
+save_dir: ./results
 number_of_images: 5
 
 manual_seed: 0

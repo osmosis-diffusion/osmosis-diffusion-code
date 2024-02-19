@@ -73,7 +73,7 @@ diffusion:
   model_var_type: learned_range
 
   dynamic_threshold: False
-  clip_denoised: False
+  clip_denoised: True
   min_max_denoised: False
 
   rescale_timesteps: False
@@ -91,7 +91,7 @@ conditioning:
     scale: 3,3,3,0.1 # osmosis
     gradient_x_prev: True # if False - the gradient of the forward degradation is according x_0_pred
 
-    gradient_clip: True,0.001
+    gradient_clip: False,0.001
 
 # specify the loss and its weight/scale, if not specified so no auxiliary loss
 aux_loss:
