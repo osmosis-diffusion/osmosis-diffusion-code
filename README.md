@@ -194,7 +194,11 @@ Download the relevant [dataset](#datasets) into ```./data/``` directory.
 
 ### 3) Set environment
 
-### Local environment setting
+For This section there are two options:
+1) Setting of local environment
+2) Build Docker image
+
+### Option 1 - Local environment setting
 
 Install dependencies
 
@@ -203,28 +207,30 @@ conda create -n osmosis python=3.8
 
 conda activate osmosis
 ```
-
 See dependencies at environment.yml file - [link](environment.yml)
 
-<!--
-### [Option 2] Build Docker image
+### Option 2 - Build Docker image
 
 Install docker engine, GPU driver and proper cuda before running the following commands.
 
-Dockerfile already contains command to clone external codes. You don't have to clone them again.
-
---gpus=all is required to use local GPU device (Docker >= 19.03)
-
-```
-docker build -t dps-docker:latest .
-
-docker run -it --rm --gpus=all dps-docker
-```
-
+<!--
+Verify that the data paths, model path and results path is in the working directory.
 -->
 
+Get into ```osmosis-diffusion-code``` directory (where the project was cloned to) and the run in the command line:  
+
+```
+docker build -t osmosis_docker .
+
+windows:
+docker run -v %cd%:/home/osmosis-diffusion-code --gpus all -it --rm osmosis_docker
+
+linux:
+docker run -v $(pwd):/home/osmosis-diffusion-code --gpus all -it --rm osmosis_docker
+```
 
 <br />
+
 
 ### 4) Inference
 
