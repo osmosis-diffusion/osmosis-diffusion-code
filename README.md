@@ -82,6 +82,18 @@ The images are linear (were not undergo any non-linear processing) and undergo a
 
 <br />
 
+
+### Underwater images - SQUID - [link](https://drive.google.com/drive/folders/1mlojrmSsSF07y5jH3m1P7SBlY5TF0C7A?usp=sharing)
+
+A white balanced processed images for [SQUID](https://zenodo.org/records/5744037) dataset.
+
+This folder contains 4 sub folders, one for each subset - Katzaa, Nachsholim, Michmoret and Satil.
+
+Those images are linear (were not undergo any non-linear processing) and undergo a white balance process.
+
+<br />
+
+
 ### Underwater images - Simulated data with Ground Truth
 
 As part of this study, underwater scenes were simulated to facilitate quantitative comparisons.
