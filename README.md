@@ -216,13 +216,19 @@ Before executing the following commands, ensure that the Docker engine, GPU driv
 If using the Docker image, ensure that the data paths, model path, and results path are in the working directory.
 
 Navigate to the ```osmosis-diffusion-code``` directory (where the project was cloned), and run the following commands in the command line:
+
+Build a Docker image
 ```
 docker build -t osmosis_docker .
+```
 
-windows:
+Run docker image on **Windows**:
+```
 docker run -v %cd%:/home/osmosis-diffusion-code --gpus all -it --rm osmosis_docker
+```
 
-linux:
+Run docker image on **Linux**:
+```
 docker run -v $(pwd):/home/osmosis-diffusion-code --gpus all -it --rm osmosis_docker
 ```
 
