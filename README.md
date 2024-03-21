@@ -56,16 +56,15 @@ Furthermore, the algorithm exhibits versatility for additional tasks such as deh
 is included.
 
 
-
 <br />
 
-### Underwater images - real data - [link](https://drive.google.com/drive/folders/1mlojrmSsSF07y5jH3m1P7SBlY5TF0C7A?usp=sharing)
+### Underwater images - real data - [link](https://drive.google.com/drive/folders/1mJnCn0cnoR-aO4pieBWYvTSPGwA9ZUx-?usp=sharing)
 
 This folder contains two similar datasets.
 
 - **Low** Resolusion
-  set - [link](https://drive.google.com/drive/folders/1g6WAF6RAQlen84bMFNIMq-U-3XJ7oN65?usp=sharing) - 256x256
-- **High** Resolusion set - [link](https://drive.google.com/drive/folders/12c8MDPEHgOSSMLZ0l-eFCs8iIQoOPuVN?usp=sharing)
+  set - [link](https://drive.google.com/drive/folders/1opAVMZvh_bPtDIjW6FuaiHpRCkZ76pc4?usp=drive_link) - 256x256
+- **High** Resolusion set - [link](https://drive.google.com/drive/folders/1mwrOnwe1qd_Krk87VZl3q25xzR3uPje2?usp=drive_link)
 
 Both datasets contain identical images, with the *Low-Resolution Set* serving as a cropped and resized version of the
 *High-Resolution Set* images.
@@ -74,27 +73,14 @@ Our method accepts input images of any resolution, but it standardizes the resol
 the smaller side and subsequently center cropping them.
 
 The underwater images are sourced from three
-datasets: [SQUID](https://zenodo.org/records/5744037) <!--(https://csms.haifa.ac.il/profiles/tTreibitz/datasets/ambient_forwardlooking/index.html)-->,
-[SeaThru](https://csms.haifa.ac.il/profiles/tTreibitz/datasets/sea_thru/index.html)
-and [SeaThru-Nerf](https://sea-thru-nerf.github.io/).
+datasets: [SQUID](https://zenodo.org/records/5744037),
+[SeaThru](https://csms.haifa.ac.il/profiles/tTreibitz/datasets/sea_thru/index.html), 
+[SeaThru-Nerf](https://sea-thru-nerf.github.io/) 
+and additional scenes captured by [Dr. Derya Akkaynak](https://www.deryaakkaynak.com/), Matan Yuval and Deborah Levy.
 
 The images are linear (were not undergo any non-linear processing) and undergo a white balance process.
 
 <br />
-
-
-### Underwater images - SQUID - [link](https://drive.google.com/drive/folders/1mlojrmSsSF07y5jH3m1P7SBlY5TF0C7A?usp=sharing)
-
-A white balanced processed images for [SQUID](https://zenodo.org/records/5744037) dataset.
-
-This folder contains 4 sub folders, one for each subset - Katzaa, Nachsholim, Michmoret and Satil.
-
-Those images are linear (were not undergo any non-linear processing) and undergo a white balance process.
-
-SQUID Dataset was used from depth estimation evaluation.
-
-<br />
-
 
 ### Underwater images - Simulated data with Ground Truth
 
@@ -102,21 +88,16 @@ As part of this study, underwater scenes were simulated to facilitate quantitati
 
 Images are sourced from the indoor dataset 
 [NYUv2](https://cs.nyu.edu/~silberman/datasets/nyu_depth_v2.html),
-each accompanied by its corresponding depth map.
+each accompanied by its corresponding depth map. 
+This dataset comprises a total of 1449 images.
 
-Three datasets are involved in this simulation.
-
-The specific simulation parameters are outlined in both the paper and the supplementary data.
-
-- [Simulation #1](https://drive.google.com/drive/folders/1E4cXHtpNWX3wHrkmiVDF_XUpPnWMOe-0?usp=sharing) - subset of 100 images
-- [Simulation #2](https://drive.google.com/drive/folders/1_096PIqXR0w4j8ASyZsEPHs1WZj3AscN?usp=sharing) - subset of 100 images
-- [Simulation #3](https://drive.google.com/drive/folders/1FDDneIPYveXgVkX8UmeqOL0_LiqrvkC5?usp=sharing) - all 1449 images
+[Link](https://drive.google.com/drive/folders/1FDDneIPYveXgVkX8UmeqOL0_LiqrvkC5?usp=sharing) to simulated dataset.
 
 Each simulation includes 3 folders:
 
 1. input - the simulated images
 2. gt_rgb - Ground Truth color images
-3. gt_rgb - Ground Truth depth maps
+3. gt_depth - Ground Truth depth maps
 
 <br />
 
@@ -148,7 +129,7 @@ In case you would like to try this method on your own data:
 - If there is ground truth data, indicate its path in the ``` data: gt_rgb: <path> ```
   and ``` data: gt_depth: <path> ``` fields. Change the flag ``` data: ground_truth: True ``` (similar to the
   configurations in ```osmosis_simulation_sample_config.yaml```).
-- If your data is not simulated or is not include linear images, set the flag ``` degamma_input: True ```, as it often
+- If your data is not simulated or is not include linear images, setting the flag ``` degamma_input: True ``` often
   produces improved results.
 
 <br />
@@ -397,8 +378,8 @@ params:
 # see the paper for details on the losses
 aux_loss:
   aux_loss:
-    avrg_loss: 0.5        # scale of that loss
-    val_loss: 20          # scale of that loss
+    avrg_loss: 0.5        # scale of average loss
+    val_loss: 20          # scale of value loss
 
 data:
   name: osmosis                      # dataset name
@@ -431,9 +412,25 @@ measurement:
 
   noise:                              # added noise
     name: clean                       # clean - osmosis, gaussian - ps
-    # sigma: 0.001                      # comment in case of "clean" uncomment in case of "gaussian"
+    # sigma: 0                      # comment in case of "clean" uncomment in case of "gaussian"
 
 ```
+
+### Results Directory
+
+The results are saved in the directory specified by the ```save_dir: <path>``` parameter in the configuration file.
+
+Subdirectories are created within the specified ```<path>``` based on ```measurement: operator: name: <operator_name>```, 
+```data: name: <data_name>```, current date and run number, to prevent overwriting existing files.
+
+Individual images are stored in the ```single_images``` directory, 
+while grid results (consisting of the input image, restored RGB, and predicted depth displayed side by side) 
+and process are saved under ```grid_results```.
+
+The path for *single images* will be: ```<path>/<operator_name>/<data_name>/<today_date>/<run_number>/single_images/```.
+
+For example:  ```<path>/underwater_physical_revised/simulation/21-6-24/run2/single_images/```.
+
 
 ### Process Records
 

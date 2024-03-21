@@ -127,4 +127,4 @@ class GaussianDiffusion:
             grid_image = make_grid(grid_list, nrow=len(xt_list), pad_value=1.)
             tvtf.to_pil_image(grid_image).save(pjoin(save_path, f"image_{image_idx}_process.png"))
 
-        return x
+        return x, [x_start_rgb, x_depth]

@@ -307,7 +307,7 @@ class GaussianDiffusion:
 
                 # save the images during the diffusion process
                 if record and (alternate_ii == (alternate_len - 1)) and \
-                        ((idx % record_every == 0) or (idx == 1) or (idx == 999)):
+                        ((idx % record_every == 0) or (idx == 0) or (idx == 999)):
                     # the RGBD image
                     mid_x_0_pred_tmp = out['pred_xstart'].detach().cpu()
 

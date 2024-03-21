@@ -217,7 +217,7 @@ def main() -> None:
                 sample_depth_mm = utilso.min_max_norm_range(sample_depth_tmp[0].unsqueeze(0))
                 sample_depth_vis_pmm = utilso.min_max_norm_range_percentile(sample_depth_tmp,
                                                                             vmin=0, vmax=1,
-                                                                            percent_low=0.05,
+                                                                            percent_low=0.03,
                                                                             percent_high=0.99,
                                                                             is_uint8=False)
                 sample_depth_vis_pmm_color = utilso.depth_tensor_to_color_image(sample_depth_vis_pmm)
@@ -351,6 +351,8 @@ def main() -> None:
 
                     # save the image
                     results_pil.save(pjoin(save_grids_path, f'{orig_file_name}_g{global_ii}_grid.png'))
+
+                if args.save_singles or args.save_grids:
                     logger.log(f"result images was saved into: {out_path}")
 
                 logger.log(f"Run time: {datetime.datetime.now() - start_run_time_ii}")
@@ -397,7 +399,9 @@ def main() -> None:
 
                     # save the image
                     results_pil.save(pjoin(save_grids_path, f'{orig_file_name}.png'))
-                    logger.log(f"grid results image is saved: {save_grids_path}")
+
+                if args.save_singles or args.save_grids:
+                    logger.log(f"result images was saved into: {out_path}")
 
                 logger.log(f"Run time: {datetime.datetime.now() - start_run_time_ii}")
 

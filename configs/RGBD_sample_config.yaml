@@ -2,7 +2,7 @@
 save_dir: ./results
 number_of_images: 5
 
-manual_seed: 0
+manual_seed: 4321
 save_singles: True # save single reference image, restored RGB image and depth estimation image
 save_grids: True
 

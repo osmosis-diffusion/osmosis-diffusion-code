@@ -40,6 +40,11 @@ def main() -> None:
     if args.save_singles:
         save_singles_path = pjoin(out_path, f"single_images")
         os.makedirs(save_singles_path)
+        save_singles_rgb_path = pjoin(save_singles_path, f"rgb")
+        os.makedirs(save_singles_rgb_path)
+        save_singles_depth_path = pjoin(save_singles_path, f"depth_color")
+        os.makedirs(save_singles_depth_path)
+
     else:
         save_singles_path = None
 
@@ -86,10 +91,13 @@ def main() -> None:
         diffusion = GaussianDiffusion(T=args.diffusion['steps'], schedule=args.diffusion['noise_schedule'])
 
         # sample by inverse the diffusion model
-        x = diffusion.inverse(net=diff_unet, shape=(x_start_dim, args.image_size, args.image_size),
-                              image_channels=x_start_dim, steps=args.diffusion['timestep_respacing'], device=device,
-                              record_process=args.record_process, record_every=args.record_every,
-                              save_path=save_grids_path, image_idx=im_idx)
+        x, [x_start_rgb, x_start_depth] = diffusion.inverse(net=diff_unet,
+                                                            shape=(x_start_dim, args.image_size, args.image_size),
+                                                            image_channels=x_start_dim,
+                                                            steps=args.diffusion['timestep_respacing'], device=device,
+                                                            record_process=args.record_process,
+                                                            record_every=args.record_every,
+                                                            save_path=save_grids_path, image_idx=im_idx)
 
         # split into RGB image and Depth image
         x = x.cpu()
@@ -101,10 +109,10 @@ def main() -> None:
 
         # save the images
         if args.save_singles:
-            tvtf.to_pil_image(x_rgb).save(pjoin(save_singles_path, f"image_{im_idx}_rgb.png"))
-            if x_start_dim == 4:
-                tvtf.to_pil_image(x_d_pmm_color).save(pjoin(save_singles_path, f"image_{im_idx}_depth.png"))
 
+            tvtf.to_pil_image(x_start_rgb).save(pjoin(save_singles_rgb_path, f"image_{im_idx}.png"))
+            if x_start_dim == 4:
+                tvtf.to_pil_image(x_start_depth).save(pjoin(save_singles_depth_path, f"image_{im_idx}.png"))
         # save the images as pairs
         if args.save_grids and x_start_dim == 4:
             grid_list = [x_rgb, x_d_pmm_color]
@@ -114,8 +122,8 @@ def main() -> None:
         logger.log(f"Run time: {datetime.datetime.now() - start_run_time_ii}")
 
 
-# close the logger txt file
-logger.get_current().close()
+    # close the logger txt file
+    logger.get_current().close()
 
 if __name__ == '__main__':
     parser = ArgumentParser()
