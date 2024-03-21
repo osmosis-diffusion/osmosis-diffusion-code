@@ -244,7 +244,7 @@ There are several examples bellow.
 
 <br />
 
-**There are 5 possible configurations:**
+**There are 4 possible configurations:**
 
 #### a) Underwater Image Restoration and Depth Estimation - real data
 
