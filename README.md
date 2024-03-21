@@ -449,7 +449,7 @@ the ```record_every: <value>``` field.
 ```
 save_grids: True     
 record_process: True 
-record_every: 200    
+record_every: 150    
 ```
 
 An example: (the process starts from left to right and sampled every 150 time step)
