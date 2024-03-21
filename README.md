@@ -347,7 +347,7 @@ In this section the structure and the *relevant* fields in the configuration fil
 save_dir: ./results    # saving directory path
 
 degamma_input: False # should be True in case of NOT linear images, or NOT simulated images, otherwise False
-manual_seed: 0       # manuual seed for the diffusion sampling process
+manual_seed: 0       # manual seed for the diffusion sampling process
 rgb_guidance: False   # relevant only for the check prior inference
 
 save_singles: True   # save single results images - 1)reference image (input), 2)restored RGB image and 3)depth estimation image
@@ -356,7 +356,7 @@ save_grids: True     # save grid of the results, next to each other
 record_process: True # record the sampling process
 record_every: 200    # in case "record_process: True" - record every <value> steps (in this case - 200)
 
-# change unet input and output - for RGBD - it is
+# change unet input and output - for RGBD
 change_input_output_channels: True
 input_channels: 4   # RGBD
 output_channels: 8  # RGBD * 2 - learning sigma = True, if False 4
@@ -368,14 +368,8 @@ sample_pattern:     # the diffusion sampling pattern for the
   # update phi's
   update_start: 0.7    # optimizing phi's (<value>*T)
   update_end: 0        
-  global_N: 1          # repeat several times the T steps
-  local_M: 1           # number of iterations between update x_t and optimizing phis for the same t - time step
   n_iter: 20           # for each t step, the number of optimization steps for te phi's
   
-  start_guidance: 1    # PGDiff - when to guide? no guidance at all not in the range (<value>*T)
-  stop_guidance: 0
-
-
 unet_model:                               # unet model configurations
   model_path: ./models/osmosis_outdoor.pt # pretrained model path
   pretrain_model: osmosis                 # pretrained model name
@@ -398,8 +392,8 @@ aux_loss:
 
 data:
   name: osmosis                      # dataset name
-  root: .\data\underwater\high_res   # path of the dataset
-  ground_truth: False                # if the dataset includes ground truth - True, else - False
+  root: .\data\underwater\high_res          # path of the dataset
+  ground_truth: False                       # if the dataset includes ground truth - True, else - False
   gt_rgb: .\data\simulation_1\gt_rgb        # dataset ground truth paths - comment when no GT data
   gt_depth: .\data\simulation_1\gt_depth    # dataset ground truth paths - comment when no GT data
 
@@ -463,7 +457,7 @@ An example: (the process starts from left to right and sampled every 200 time st
 The first row shows the predicted image on that step, and the second row shows the depth map in that step, where blue
 represents close distances and yellow farther distances.
 
-<img src='figures/MTN_4034_g0_process.png' width='1000'>
+<img src='figures/sampling_process.png' width='1000'>
 
 <br />
 
