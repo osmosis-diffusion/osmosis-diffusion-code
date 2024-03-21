@@ -60,6 +60,8 @@ is included.
 
 ### Underwater images - real data - [link](https://drive.google.com/drive/folders/1mJnCn0cnoR-aO4pieBWYvTSPGwA9ZUx-?usp=sharing)
 
+This directory contains the real world underwater images showcased in both the paper and the appendix.
+
 This folder contains two similar datasets.
 
 - **Low** Resolusion
