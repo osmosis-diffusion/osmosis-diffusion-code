@@ -32,7 +32,7 @@ depth estimation on underwater scenes.
 ## RGBD Prior
 
 In the course of this research, an unconditional Diffusion Probabilistic Model (DDPM) is trained on RGBD (color image
-and depth map) data. The training follows [improved-diffusion](https://github.com/openai/guided-diffusion)
+and depth map) data. The training follows [improved-diffusion](https://github.com/openai/improved-diffusion)
 and [guided-diffusion](https://github.com/openai/guided-diffusion).
 To adapt the model for RGBD data (instead of RGB), we made specific modifications by adjusting the UNet input layer to
 handle 4 channels and the output layers to generate 8 channels.
