@@ -348,7 +348,7 @@ save_dir: ./results    # saving directory path
 
 degamma_input: False # should be True in case of NOT linear images, or NOT simulated images, otherwise False
 manual_seed: 0       # manual seed for the diffusion sampling process
-rgb_guidance: False   # relevant only for the check prior inference
+rgb_guidance: False   # relevant only for the RGB guidance and producing depth map for the input image
 
 save_singles: True   # save single results images - 1)reference image (input), 2)restored RGB image and 3)depth estimation image
 save_grids: True     # save grid of the results, next to each other
