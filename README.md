@@ -452,7 +452,7 @@ record_process: True
 record_every: 200    
 ```
 
-An example: (the process starts from left to right and sampled every 200 time step)
+An example: (the process starts from left to right and sampled every 150 time step)
 
 The first row shows the predicted image on that step, and the second row shows the depth map in that step, where blue
 represents close distances and yellow farther distances.
