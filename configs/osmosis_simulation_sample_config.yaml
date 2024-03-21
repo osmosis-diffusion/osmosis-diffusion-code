@@ -104,9 +104,9 @@ data:
   batch_size: 1
 
   name: simulation
-  root: ./data/simulation_2/input
-  gt_rgb: ./data/simulation_2/gt_rgb
-  gt_depth: ./data/simulation_2/gt_depth
+  root: ./data/simulation/input
+  gt_rgb: ./data/simulation/gt_rgb
+  gt_depth: ./data/simulation/gt_depth
 
   stop_after: -1
   ground_truth: True
