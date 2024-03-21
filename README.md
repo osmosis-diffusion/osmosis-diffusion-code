@@ -84,7 +84,7 @@ The images are linear (were not undergo any non-linear processing) and undergo a
 
 <br />
 
-### Underwater images - Simulated data with Ground Truth
+### Underwater images - Simulated data with Ground Truth - [Link](https://drive.google.com/drive/folders/1FDDneIPYveXgVkX8UmeqOL0_LiqrvkC5?usp=sharing)
 
 As part of this study, underwater scenes were simulated to facilitate quantitative comparisons.
 
@@ -92,8 +92,6 @@ Images are sourced from the indoor dataset
 [NYUv2](https://cs.nyu.edu/~silberman/datasets/nyu_depth_v2.html),
 each accompanied by its corresponding depth map. 
 This dataset comprises a total of 1449 images.
-
-[Link](https://drive.google.com/drive/folders/1FDDneIPYveXgVkX8UmeqOL0_LiqrvkC5?usp=sharing) to simulated dataset.
 
 Each simulation includes 3 folders:
 
