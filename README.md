@@ -463,19 +463,13 @@ represents close distances and yellow farther distances.
 
 ## Citation
 
-If you find our code relevant to your project, please refer by setting a link to this github repository.
-
-<!--
-If you find our work interesting, please consider citing
+If you find this project useful, please consider citing:
 
 ```
-@inproceedings{
-blabla2024osmosis,
-title={},
-author={{,
-booktitle={},
-year={},
-url={}
+@article{nathan2024osmosis,
+  title={Osmosis: RGBD Diffusion Prior for Underwater Image Restoration}, 
+  author={Bar Nathan, Opher and Levy, Deborah and Treibitz, Tali and Rosenbaum, Dan},
+  journal={arXiv preprint arXiv:2403.14837},
+  year={2024}
 }
 ```
--->
