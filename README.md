@@ -1,6 +1,6 @@
 # Osmosis: RGBD Diffusion Prior for Underwater Image Restoration [ECCV 2024]
 
-### [Paper](https://arxiv.org/pdf/2403.14837) | [Project Page](https://osmosis-diffusion.github.io/)
+### [Paper](https://arxiv.org/abs/2403.14837) | [Project Page](https://osmosis-diffusion.github.io/)
 
 Paper accepted by **ECCV 2024**!
 
