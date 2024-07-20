@@ -1,4 +1,4 @@
-# Osmosis: RGBD Diffusion Prior for Underwater Image Restoration
+# Osmosis: RGBD Diffusion Prior for Underwater Image Restoration [accepted to ECCV 2024]
 
 ### <!--[Paper](link) , -->[Project Page](https://osmosis-diffusion.github.io/)
 
@@ -17,7 +17,11 @@ and [DPS](https://github.com/DPS2022/diffusion-posterior-sampling).
 
 ## Abstract
 
-In this work, our proposed method takes an underwater-captured image as input and outputs a restored image, free from
+Underwater image restoration is a challenging task because of water effects that increase dramatically with distance. This is worsened by lack of ground truth data of clean scenes without water. Diffusion priors have emerged as strong image restoration priors. However, they are often trained with a dataset of the desired restored output, which is not available in our case.
+We also observe that using only color data is insufficient, and therefore augment the prior with a depth channel. We train an unconditional diffusion model prior on the joint space of color and depth, using standard RGBD datasets of natural outdoor scenes in air. Using this prior together with a novel guidance method based on the underwater image formation model, we generate posterior samples of clean images, removing the water effects. 
+Even though our prior did not see any underwater images during training, our method outperforms state-of-the-art baselines for image restoration on very challenging scenes.
+
+<!-- In this work, our proposed method takes an underwater-captured image as input and outputs a restored image, free from
 the effects of the water medium, along with a depth estimation of the scene.
 Notably, our method operates with a single image as input.
 We show how to leverage in-air images to train diffusion prior for underwater restoration. We observe that only color
@@ -27,7 +31,7 @@ datasets of natural outdoor scenes in air.
 Using this prior together with a novel guidance method based on the underwater image formation model, we generate
 posterior samples of clean images, effectively eliminating the water effects.
 Despite the trained prior not being exposed to underwater images, our method successfully performs image restoration and
-depth estimation on underwater scenes.
+depth estimation on underwater scenes. -->
 
 ## RGBD Prior
 
