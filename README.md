@@ -1,6 +1,8 @@
-# Osmosis: RGBD Diffusion Prior for Underwater Image Restoration [accepted to ECCV 2024]
+# Osmosis: RGBD Diffusion Prior for Underwater Image Restoration [ECCV 2024]
 
-### <!--[Paper](link) , -->[Project Page](https://osmosis-diffusion.github.io/)
+### [Paper](https://arxiv.org/pdf/2403.14837) | [Project Page](https://osmosis-diffusion.github.io/)
+
+Paper accepted by **ECCV 2024**!
 
 > Osmosis: RGBD Diffusion Prior for Underwater Image Restoration
 >
@@ -8,7 +10,7 @@
 > Levy](https://www.linkedin.com/in/deborah-levy-78a290b1/) | [Tali Treibitz](https://www.viseaon.haifa.ac.il/) | [Dan Rosenbaum ](https://danrsm.github.io/)
 
 This repository contains official PyTorch implementation for **Osmosis: RGBD Diffusion Prior for Underwater Image
-Restoration**.
+Restoration**, ECCV, 2024.
 
 ![intro](figures/teaser2.png)
 
